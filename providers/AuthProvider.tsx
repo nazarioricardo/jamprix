@@ -1,14 +1,14 @@
 import React, { createContext, useState, useEffect } from "react";
 import { router } from "expo-router";
 import { request } from "../request";
+import { useStorageState } from "./useStorageState";
 
 type ContextProps = {
-  user: null | boolean;
-  // setUser: (user: boolean) => void;
+  // user: null | boolean;
   token: string | null;
-  // setToken: (token: string) => void;
   signIn: (token: string) => void;
   signOut: () => void;
+  isLoadingToken: boolean;
 };
 
 const AuthContext = createContext<Partial<ContextProps>>({});
@@ -18,9 +18,9 @@ interface Props {
 }
 
 const AuthProvider = (props: Props) => {
-  const [user, setUser] = useState<null | boolean>(null);
-  const [token, setToken] = useState<string | null>(null);
-
+  const [[isLoadingToken, token], setToken] = useStorageState("token");
+  // const [user, setUser] = useState<null | boolean>(null);
+  // const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
     console.log("token", Boolean(token));
     if (token) {
@@ -43,10 +43,11 @@ const AuthProvider = (props: Props) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        // user,
         token,
         signIn,
         signOut,
+        isLoadingToken,
       }}
     >
       {props.children}
