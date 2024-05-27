@@ -1,14 +1,15 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useEffect } from "react";
 import { router } from "expo-router";
 import { request } from "../request";
 import { useStorageState } from "./useStorageState";
 
 type ContextProps = {
   // user: null | boolean;
-  token: string | null;
-  signIn: (token: string) => void;
+  musicToken: string | null;
+  dbToken: string | null;
+  signIn: (musicToken: string) => void;
   signOut: () => void;
-  isLoadingToken: boolean;
+  isLoading: boolean;
 };
 
 const AuthContext = createContext<Partial<ContextProps>>({});
@@ -18,36 +19,37 @@ interface Props {
 }
 
 const AuthProvider = (props: Props) => {
-  const [[isLoadingToken, token], setToken] = useStorageState("token");
+  const [[isLoading, musicToken], setMusicToken] =
+    useStorageState("musicToken");
   // const [user, setUser] = useState<null | boolean>(null);
   // const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
-    console.log("token", Boolean(token));
-    if (token) {
-      request.defaults.headers.Authorization = `Bearer ${token}`;
+    console.log("token", Boolean(musicToken));
+    if (musicToken) {
+      request.defaults.headers.Authorization = `Bearer ${musicToken}`;
       router.replace("/");
     } else {
       request.defaults.headers.Authorization = "";
       router.replace("/");
     }
-  }, [token]);
+  }, [musicToken]);
 
-  const signIn = (token: string) => {
-    setToken(token);
+  const signIn = (musicToken: string) => {
+    setMusicToken(musicToken);
   };
 
   const signOut = () => {
-    setToken(null);
+    setMusicToken(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
         // user,
-        token,
+        musicToken,
         signIn,
         signOut,
-        isLoadingToken,
+        isLoading,
       }}
     >
       {props.children}
