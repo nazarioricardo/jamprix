@@ -22,6 +22,9 @@
     },
     "ios": {
       "bundleIdentifier": "dev.gneiss.JamPrix"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
