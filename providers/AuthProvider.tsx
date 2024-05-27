@@ -4,9 +4,11 @@ import { request } from "../request";
 
 type ContextProps = {
   user: null | boolean;
-  setUser: (user: boolean) => void;
+  // setUser: (user: boolean) => void;
   token: string | null;
-  setToken: (token: string) => void;
+  // setToken: (token: string) => void;
+  signIn: (token: string) => void;
+  signOut: () => void;
 };
 
 const AuthContext = createContext<Partial<ContextProps>>({});
@@ -30,13 +32,21 @@ const AuthProvider = (props: Props) => {
     }
   }, [token]);
 
+  const signIn = (token: string) => {
+    setToken(token);
+  };
+
+  const signOut = () => {
+    setToken(null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        setUser,
         token,
-        setToken,
+        signIn,
+        signOut,
       }}
     >
       {props.children}
