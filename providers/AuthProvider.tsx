@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import { router } from "expo-router";
 import { request } from "../request";
 
 type ContextProps = {
@@ -19,10 +20,13 @@ const AuthProvider = (props: Props) => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("token", Boolean(token));
     if (token) {
       request.defaults.headers.Authorization = `Bearer ${token}`;
+      router.replace("/");
     } else {
       request.defaults.headers.Authorization = "";
+      router.replace("/");
     }
   }, [token]);
 
