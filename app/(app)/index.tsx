@@ -5,10 +5,10 @@ import { useRouter } from "expo-router";
 
 function Home() {
   const router = useRouter();
-  const { signOut } = useSession();
+  const { signOut, email } = useSession();
   const onPressCreatePrix = async () => {
     router.push("contest/create");
-    router;
+
     // try {
     //   const response = await supabase.from("contest").insert({ name: "Prix" });
     //   console.log(response);
@@ -19,7 +19,7 @@ function Home() {
 
   return (
     <View>
-      <Text>Testing</Text>
+      <Text>{email}</Text>
       <Button title="Create Prix" onPress={onPressCreatePrix} />
       <Button title="Sign Out" onPress={signOut} />
     </View>

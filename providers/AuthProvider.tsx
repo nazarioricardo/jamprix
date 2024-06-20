@@ -1,52 +1,144 @@
 import React, { createContext, useEffect } from "react";
 import { router } from "expo-router";
-import { request } from "../request";
+import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
+import { getAuth } from "firebase/auth";
+import { supabase } from "../supabase/initSupabase";
+
+const PASSWORD = "T_6*xMPseYLg6cYyGgqma@9AX!Lq3Vdw26Xn";
+
+type MusicAuthData = {
+  access_token: string;
+  refresh_token: string;
+};
+
+type MusicUser = {
+  email: string;
+  id: string;
+};
+
+type Session = {
+  id: string;
+  token: string;
+  refreshToken: string;
+};
 
 type ContextProps = {
   // user: null | boolean;
+  email: string | null;
+  musicId: string | null;
   musicToken: string | null;
+  musicRefreshToken: string | null;
+  dbId: string | null;
   dbToken: string | null;
-  signIn: (musicToken: string) => void;
+  dbRefreshToken: string | null;
+  signIn: (data: MusicAuthData) => void;
   signOut: () => void;
   isLoading: boolean;
 };
 
 const AuthContext = createContext<Partial<ContextProps>>({});
 
-interface Props {
+type Props = {
   children: React.ReactNode;
-}
+};
 
 const AuthProvider = (props: Props) => {
-  const [[isLoading, musicToken], setMusicToken] =
-    useStorageState("musicToken");
-  // const [user, setUser] = useState<null | boolean>(null);
-  // const [token, setToken] = useState<string | null>(null);
+  const [[isLoadingMusicToken, musicToken], setMusicToken] =
+    useStorageState("musicAuth");
+  const [
+    [isLoadingMusicRefreshToken, musicRefreshToken],
+    setMusicRefreshToken,
+  ] = useStorageState("musicRefreshToken");
+  const [[isLoadingMusicId, musicId], setMusicId] = useStorageState("musicId");
+  const [[isLoadingEmail, email], setEmail] = useStorageState("email");
+
+  const [[isLoadingDbId, dbId], setDbId] = useStorageState("dbId");
+  const [[isLoadingDbToken, dbToken], setDbToken] = useStorageState("dbToken");
+  const [[isLoadingDbRefreshToken, dbRefreshToken], setDbRefreshToken] =
+    useStorageState("dbRefreshToken");
+
+  const isLoading =
+    isLoadingMusicToken ||
+    isLoadingMusicRefreshToken ||
+    isLoadingDbId ||
+    isLoadingDbToken ||
+    isLoadingDbRefreshToken ||
+    isLoadingMusicId ||
+    isLoadingEmail;
+
   useEffect(() => {
     console.log("token", Boolean(musicToken));
-    if (musicToken) {
-      request.defaults.headers.Authorization = `Bearer ${musicToken}`;
-      router.replace("/");
-    } else {
-      request.defaults.headers.Authorization = "";
-      router.replace("/");
-    }
+    router.replace("/");
   }, [musicToken]);
 
-  const signIn = (musicToken: string) => {
-    setMusicToken(musicToken);
+  const signIn = async ({ access_token, refresh_token }: MusicAuthData) => {
+    let musicData;
+    try {
+      const { data } = await spotifyRequest.get(
+        "https://api.spotify.com/v1/me",
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        },
+      );
+
+      musicData = data;
+
+      console.log("supabase data", data);
+    } catch (error) {
+      console.error("Error Signing In:", error);
+      throw error;
+    }
+
+    const { id, email } = musicData;
+
+    let dbData;
+    try {
+      const { data } = await supabase.auth.signUp({
+        email,
+        password: `${id}:${PASSWORD}`,
+      });
+
+      dbData = data;
+    } catch (error) {
+      console.error("supabase auth error:", error);
+      throw error;
+    }
+
+    if (!dbData.session) {
+      throw new Error("No Database Session");
+    }
+
+    setMusicToken(access_token);
+    setMusicRefreshToken(refresh_token);
+    setMusicId(id);
+    setDbToken(dbData.session.access_token);
+    setDbRefreshToken(dbData.session.refresh_token);
+    setDbId(dbData.session.user.id);
+    setEmail(email);
   };
 
   const signOut = () => {
     setMusicToken(null);
+    setMusicToken(null);
+    setMusicRefreshToken(null);
+    setMusicId(null);
+    setDbToken(null);
+    setDbRefreshToken(null);
+    setDbId(null);
+    setEmail(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
-        // user,
         musicToken,
+        musicRefreshToken,
+        musicId,
+        dbId,
+        dbToken,
+        dbRefreshToken,
+        email,
         signIn,
         signOut,
         isLoading,

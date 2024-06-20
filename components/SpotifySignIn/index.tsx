@@ -5,6 +5,7 @@ import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { supabase } from "../../supabase/initSupabase";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useSession } from "../../providers/useSession";
+import { spotifyRequest } from "../../request";
 
 const SPOTIFY_ID = "ececd6b085a7423ea9310edcb4fff94f";
 const SPOTIFY_SECRET = "a4c0f07cd1ba485fbd886fc3a22728f2";
@@ -39,7 +40,7 @@ function SpotifySignIn() {
         native: "dev.gneiss.JamPrix://",
       }),
     },
-    SPOTIFY_DISCOVERY
+    SPOTIFY_DISCOVERY,
   );
 
   const onPressSpotifySignIn = () => {
@@ -66,17 +67,18 @@ function SpotifySignIn() {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
-          }
+          },
         )
-        .then(({ data: { access_token } }) => {
+        .then(({ data }) => {
           if (!signIn) {
             throw new Error(
-              "Unable to set token: AuthContext instance not found."
+              "Unable to set token: AuthContext instance not found.",
             );
           }
-
-          signIn(access_token);
+          console.log(data);
+          return signIn(data);
         })
+        .then(() => {})
         .catch((error) => {
           console.error(error);
         });
