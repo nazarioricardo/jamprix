@@ -12,7 +12,6 @@ type MusicAuthData = {
 };
 
 type ContextProps = {
-  // user: null | boolean;
   email: string | null;
   musicId: string | null;
   musicToken: string | null;
@@ -79,13 +78,19 @@ const AuthProvider = (props: Props) => {
     const { id, email } = musicData;
 
     let dbData;
-    try {
-      const { data } = await supabase.auth.signUp({
-        email,
-        password: `${id}:${PASSWORD}`,
-      });
+    const dbCredentials = {
+      email,
+      password: `${id}:${PASSWORD}`,
+    };
 
-      dbData = data;
+    try {
+      const { data, error } = await supabase.auth.signUp(dbCredentials);
+      if (error && error.message === "User already registered") {
+        const { data } = await supabase.auth.signInWithPassword(dbCredentials);
+        dbData = data;
+      } else {
+        dbData = data;
+      }
     } catch (error) {
       console.error("supabase auth error:", error);
       throw error;

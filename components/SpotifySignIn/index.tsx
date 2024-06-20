@@ -1,45 +1,21 @@
-import { useContext, useEffect } from "react";
-import { StyleSheet, TouchableOpacity, Text, Pressable } from "react-native";
+import { useEffect } from "react";
+import { StyleSheet, Text, Pressable } from "react-native";
 import axios from "axios";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import { supabase } from "../../supabase/initSupabase";
-import { AuthContext } from "../../providers/AuthProvider";
 import { useSession } from "../../providers/useSession";
-import { spotifyRequest } from "../../request";
-
-const SPOTIFY_ID = "ececd6b085a7423ea9310edcb4fff94f";
-const SPOTIFY_SECRET = "a4c0f07cd1ba485fbd886fc3a22728f2";
-const SPOTIFY_DISCOVERY = {
-  authorizationEndpoint: "https://accounts.spotify.com/authorize",
-  // tokenEndpoint: "https://accounts.spotify.com/api/token",
-};
-
-const SPOTIFY_SCOPES = [
-  "user-read-email",
-  "playlist-modify-public",
-  "playlist-read-private",
-  "playlist-read-collaborative",
-  "playlist-modify-private",
-  "playlist-modify-public",
-];
+import {
+  REDIRECT_URI,
+  SPOTIFY_DISCOVERY,
+  SPOTIFY_ID,
+  SPOTIFY_SECRET,
+  config,
+} from "./constants";
 
 function SpotifySignIn() {
   const { signIn } = useSession();
 
   const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: SPOTIFY_ID,
-      clientSecret: SPOTIFY_SECRET,
-      scopes: SPOTIFY_SCOPES,
-      usePKCE: false,
-      responseType: "code",
-      extraParams: {
-        access_type: "offline",
-      },
-      redirectUri: makeRedirectUri({
-        native: "dev.gneiss.JamPrix://",
-      }),
-    },
+    config,
     SPOTIFY_DISCOVERY,
   );
 
@@ -59,9 +35,7 @@ function SpotifySignIn() {
             grant_type: "authorization_code",
             client_id: SPOTIFY_ID,
             client_secret: SPOTIFY_SECRET,
-            redirect_uri: makeRedirectUri({
-              native: "dev.gneiss.JamPrix://",
-            }),
+            redirect_uri: REDIRECT_URI,
           },
           {
             headers: {
@@ -75,7 +49,7 @@ function SpotifySignIn() {
               "Unable to set token: AuthContext instance not found.",
             );
           }
-          console.log(data);
+
           return signIn(data);
         })
         .then(() => {})
