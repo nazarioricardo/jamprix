@@ -2,7 +2,6 @@ import React, { createContext, useEffect } from "react";
 import { router } from "expo-router";
 import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
-import { getAuth } from "firebase/auth";
 import { supabase } from "../supabase/initSupabase";
 
 const PASSWORD = "T_6*xMPseYLg6cYyGgqma@9AX!Lq3Vdw26Xn";
@@ -10,17 +9,6 @@ const PASSWORD = "T_6*xMPseYLg6cYyGgqma@9AX!Lq3Vdw26Xn";
 type MusicAuthData = {
   access_token: string;
   refresh_token: string;
-};
-
-type MusicUser = {
-  email: string;
-  id: string;
-};
-
-type Session = {
-  id: string;
-  token: string;
-  refreshToken: string;
 };
 
 type ContextProps = {
@@ -83,8 +71,6 @@ const AuthProvider = (props: Props) => {
       );
 
       musicData = data;
-
-      console.log("supabase data", data);
     } catch (error) {
       console.error("Error Signing In:", error);
       throw error;
