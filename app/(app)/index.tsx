@@ -8,13 +8,6 @@ function Home() {
   const { signOut, email } = useSession();
   const onPressCreatePrix = async () => {
     router.push("contest/create");
-
-    // try {
-    //   const response = await supabase.from("contest").insert({ name: "Prix" });
-    //   console.log(response);
-    // } catch (error) {
-    //   console.error(error);
-    // }
   };
 
   return (
