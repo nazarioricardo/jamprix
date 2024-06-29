@@ -1,7 +1,7 @@
 import { Button, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useSession } from "../../providers/useSession";
-import { supabase } from "../../supabase/initSupabase";
+import { useSession } from "../../../providers/useSession";
+import { supabase } from "../../../supabase/initSupabase";
 
 function Home() {
   const router = useRouter();

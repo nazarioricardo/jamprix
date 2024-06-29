@@ -114,7 +114,11 @@ const AuthProvider = (props: AuthProviderProps) => {
     setMusic(null);
     setDatabase(null);
     setEmail(null);
-    router.replace("/login");
+    if (router.canDismiss()) {
+      router.dismiss();
+    } else {
+      router.push("/login");
+    }
   };
 
   return (

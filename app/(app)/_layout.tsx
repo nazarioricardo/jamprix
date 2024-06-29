@@ -1,18 +1,13 @@
-import { Redirect, Stack } from "expo-router";
-import { Text } from "react-native";
-import { useSession } from "../../providers/useSession";
+import { Slot, Stack } from "expo-router";
 
 export default function AppLayout() {
-  const { music, database, isLoading } = useSession();
-
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
-
-  if (!music || !database) {
-    return <Redirect href="/login" />;
-  }
-
-  // This layout can be deferred because it's not the root layout.
-  return <Stack />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(root)" />
+      <Stack.Screen
+        name="login"
+        options={{ presentation: "modal", gestureEnabled: false }}
+      />
+    </Stack>
+  );
 }

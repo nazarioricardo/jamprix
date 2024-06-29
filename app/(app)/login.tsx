@@ -1,16 +1,20 @@
 import { StyleSheet, View, Button, Text } from "react-native";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import SpotifySignIn from "../components/SpotifySignIn";
-import AppleSignIn from "../components/AppleSignIn";
-import { useSession } from "../providers/useSession";
-import { supabase } from "../supabase/initSupabase";
+import SpotifySignIn from "../../components/SpotifySignIn";
+import AppleSignIn from "../../components/AppleSignIn";
+import { useSession } from "../../providers/useSession";
+import { supabase } from "../../supabase/initSupabase";
 
 function Login() {
   const { music, database, signOut, isLoading } = useSession();
 
   const onSuccess = () => {
-    router.push("/");
+    if (router.canDismiss()) {
+      router.dismiss();
+    } else {
+      router.push("/");
+    }
   };
 
   return (
