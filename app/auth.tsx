@@ -8,7 +8,6 @@ import { supabase } from "../supabase/initSupabase";
 
 function Login() {
   const { music, database, signOut } = useSession();
-  console.log("sessions", music, database);
 
   const onSuccess = () => {
     router.push("/");

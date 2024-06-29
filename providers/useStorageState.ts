@@ -3,7 +3,7 @@ import { useReducer, useEffect, useCallback } from "react";
 
 export type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
-export function useAsyncState<T>(
+function useAsyncState<T>(
   initialValue: [boolean, T | null] = [true, null],
 ): UseStateHook<T> {
   return useReducer(
@@ -16,10 +16,15 @@ export function useAsyncState<T>(
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
-  if (value == null) {
-    await deleteItemAsync(key);
-  } else {
-    await setItemAsync(key, value);
+  try {
+    if (value == null) {
+      await deleteItemAsync(key);
+    } else {
+      await setItemAsync(key, JSON.stringify(value));
+    }
+  } catch (error) {
+    console.error(error, value);
+    throw error;
   }
 }
 
