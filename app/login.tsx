@@ -1,4 +1,4 @@
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, Text } from "react-native";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import SpotifySignIn from "../components/SpotifySignIn";
@@ -7,7 +7,7 @@ import { useSession } from "../providers/useSession";
 import { supabase } from "../supabase/initSupabase";
 
 function Login() {
-  const { music, database, signOut } = useSession();
+  const { music, database, signOut, isLoading } = useSession();
 
   const onSuccess = () => {
     router.push("/");
@@ -31,6 +31,7 @@ function Login() {
         }}
       />
       <Button title="Sign Out" onPress={signOut} />
+      {isLoading ? <Text>Is Loading</Text> : null}
     </View>
   );
 }

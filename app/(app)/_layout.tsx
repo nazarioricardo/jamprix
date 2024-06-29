@@ -10,7 +10,7 @@ export default function AppLayout() {
   }
 
   if (!music || !database) {
-    return <Redirect href="/auth" />;
+    return <Redirect href="/login" />;
   }
 
   // This layout can be deferred because it's not the root layout.

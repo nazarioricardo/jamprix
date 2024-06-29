@@ -114,7 +114,7 @@ const AuthProvider = (props: AuthProviderProps) => {
     setMusic(null);
     setDatabase(null);
     setEmail(null);
-    router.replace("/auth");
+    router.replace("/login");
   };
 
   return (
