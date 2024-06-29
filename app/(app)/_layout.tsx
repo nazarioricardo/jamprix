@@ -3,13 +3,13 @@ import { Text } from "react-native";
 import { useSession } from "../../providers/useSession";
 
 export default function AppLayout() {
-  const { musicToken, isLoading } = useSession();
+  const { music, database, isLoading } = useSession();
 
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  if (!musicToken) {
+  if (!music || !database) {
     return <Redirect href="/auth" />;
   }
 

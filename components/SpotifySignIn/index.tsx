@@ -11,7 +11,11 @@ import {
   config,
 } from "./constants";
 
-function SpotifySignIn() {
+type SpotifySignInProps = {
+  onSuccess: () => void;
+};
+
+function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
   const { signIn } = useSession();
 
   const [request, response, promptAsync] = useAuthRequest(
@@ -26,7 +30,6 @@ function SpotifySignIn() {
   useEffect(() => {
     if (response?.type === "success") {
       const { code } = response.params;
-
       axios
         .post(
           "https://accounts.spotify.com/api/token",
@@ -52,7 +55,9 @@ function SpotifySignIn() {
 
           return signIn(data);
         })
-        .then(() => {})
+        .then(() => {
+          onSuccess();
+        })
         .catch((error) => {
           console.error(error);
         });
