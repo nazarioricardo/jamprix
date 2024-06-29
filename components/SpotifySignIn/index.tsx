@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { StyleSheet, Text, Pressable } from "react-native";
 import axios from "axios";
-import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
+import { useAuthRequest } from "expo-auth-session";
 import { useSession } from "../../providers/useSession";
 import {
   REDIRECT_URI,

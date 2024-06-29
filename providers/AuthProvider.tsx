@@ -1,4 +1,4 @@
-import React, { createContext, useEffect } from "react";
+import React, { createContext } from "react";
 import { router } from "expo-router";
 import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
