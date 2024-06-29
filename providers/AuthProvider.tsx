@@ -39,7 +39,6 @@ type AuthProviderProps = {
 
 const AuthProvider = (props: AuthProviderProps) => {
   const [[isLoadingEmail, email], setEmail] = useStorageState("email");
-  // const [[isLoadingMusic, music], setMusic] = useStorageState("music_session");
   const [[isLoadingMusic, music], setMusic] = useStoredMusicSession();
   const [[isLoadingDatabase, database], setDatabase] =
     useStoredDatabaseSession();
