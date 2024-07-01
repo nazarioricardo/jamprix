@@ -1,7 +1,7 @@
 import { Formik } from "formik";
 import { Button, StyleSheet, TextInput, View } from "react-native";
 
-function ContestCreate() {
+function ChannelCreate() {
   return (
     <Formik
       initialValues={{ email: "" }}
@@ -38,4 +38,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContestCreate;
+export default ChannelCreate;

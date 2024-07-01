@@ -1,30 +1,23 @@
 import { useEffect, useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Button, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
-
-type Channel = {
-  id: string;
-  title: string;
-  description: string;
-  created_at: string;
-};
-
-type Participant = {
-  user: string;
-  channel: Channel;
-};
+import { Channel, Participant } from "../../../constants";
 
 function Home() {
   const router = useRouter();
   const { signOut, email, database } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
   useEffect(() => {
+    if (!database) {
+      return;
+    }
+
     supabase
       .from("participants")
       .select("*, channel (*)")
-      .eq("user", database?.id)
+      .eq("profile", database.id)
       .then(({ data }) => {
         console.log(data);
         if (!data) {
@@ -34,10 +27,14 @@ function Home() {
 
         setChannels(data.map((partipant: Participant) => partipant.channel));
       });
-  }, []);
+  }, [database]);
 
   const onPressCreatePrix = async () => {
-    router.push("contest/create");
+    router.navigate("channel/create");
+  };
+
+  const onPressChannel = (id: string) => {
+    router.navigate({ pathname: `channel/[id]`, params: { id } });
   };
 
   return (
@@ -45,10 +42,10 @@ function Home() {
       <Text>{email}</Text>
       {channels.map(({ id, title, description }) => {
         return (
-          <View key={id}>
+          <Pressable key={id} onPress={() => onPressChannel(id)}>
             <Text>{title}</Text>
             <Text>{description}</Text>
-          </View>
+          </Pressable>
         );
       })}
       <Button title="Create Prix" onPress={onPressCreatePrix} />

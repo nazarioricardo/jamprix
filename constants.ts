@@ -7,3 +7,31 @@ export const SUPABASE_CALLBACK_URL =
 
 export const APPLE_PLAYLISTS_URL =
   "https://api.music.apple.com/v1/me/library/playlists";
+
+export type Channel = {
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+};
+
+export type Profile = {
+  id: string;
+  email: string;
+};
+
+export type Participant = {
+  profile: Profile;
+  channel: Channel;
+};
+
+export type Theme = {
+  title: string;
+  description: string;
+};
+
+export type Event = {
+  id: string;
+  theme: Theme;
+  channel: Channel;
+};

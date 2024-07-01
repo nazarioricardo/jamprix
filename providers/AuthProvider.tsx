@@ -117,7 +117,7 @@ const AuthProvider = (props: AuthProviderProps) => {
     if (router.canDismiss()) {
       router.dismiss();
     } else {
-      router.push("/login");
+      router.navigate("/login");
     }
   };
 

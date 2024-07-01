@@ -12,7 +12,7 @@ export default function RootLayout() {
     }
 
     if (!music || !database) {
-      router.push("/login");
+      router.navigate("/login");
     }
   }, [music && database]);
 

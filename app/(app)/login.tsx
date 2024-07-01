@@ -10,7 +10,7 @@ function Login() {
     if (router.canDismiss()) {
       router.dismiss();
     } else {
-      router.push("/");
+      router.navigate("/");
     }
   };
 
