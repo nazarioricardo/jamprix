@@ -37,7 +37,7 @@ type AuthProviderProps = {
 
 const DB_KEY = "database_session__";
 const MUSIC_KEY = "music_session__";
-const AuthProvider = (props: AuthProviderProps) => {
+function AuthProvider(props: AuthProviderProps) {
   const [[isLoadingEmail, email], setEmail] = useStorageState("email");
 
   const [[isLoadingDbId, dbId], setDbId] = useStorageState(DB_KEY + "id");
@@ -186,6 +186,6 @@ const AuthProvider = (props: AuthProviderProps) => {
       {props.children}
     </AuthContext.Provider>
   );
-};
+}
 
 export { AuthContext, AuthProvider };
