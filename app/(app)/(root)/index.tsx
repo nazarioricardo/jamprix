@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
 import { Channel, Participant } from "../../../constants";
@@ -9,25 +9,37 @@ function Home() {
   const router = useRouter();
   const { signOut, email, database } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
-  useEffect(() => {
-    if (!database) {
-      return;
-    }
+  const [isFetching, setIsFetching] = useState(false);
 
-    supabase
-      .from("participants")
-      .select("*, channel (*)")
-      .eq("profile", database.id)
-      .then(({ data }) => {
-        console.log(data);
-        if (!data) {
-          setChannels([]);
-          return;
-        }
+  useFocusEffect(
+    useCallback(() => {
+      if (isFetching) {
+        return;
+      }
 
-        setChannels(data.map((partipant: Participant) => partipant.channel));
-      });
-  }, [database]);
+      if (!database?.id) {
+        return;
+      }
+
+      setIsFetching(true);
+
+      supabase
+        .from("participants")
+        .select("*, channel (*)")
+        .eq("profile", database.id)
+        .then(({ data, error }) => {
+          setIsFetching(false);
+
+          console.log(data, error);
+          if (!data) {
+            setChannels([]);
+            return;
+          }
+
+          setChannels(data.map((partipant: Participant) => partipant.channel));
+        });
+    }, []),
+  );
 
   const onPressCreatePrix = async () => {
     router.navigate("channel/create");
