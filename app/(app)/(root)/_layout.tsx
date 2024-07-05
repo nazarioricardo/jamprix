@@ -4,17 +4,17 @@ import { useSession } from "../../../providers/useSession";
 import { useEffect } from "react";
 
 export default function RootLayout() {
-  const { music, database, isLoading } = useSession();
+  const { userId, isLoading } = useSession();
 
   useEffect(() => {
     if (isLoading) {
       return;
     }
 
-    if (!music || !database) {
+    if (!userId) {
       router.navigate("/login");
     }
-  }, [music && database]);
+  }, [userId, isLoading]);
 
   if (isLoading) {
     return <Text>Loading...</Text>;

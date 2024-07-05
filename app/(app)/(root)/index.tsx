@@ -7,7 +7,7 @@ import { Channel, Participant } from "../../../constants";
 
 function Home() {
   const router = useRouter();
-  const { signOut, email, database } = useSession();
+  const { signOut, email } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -17,28 +17,44 @@ function Home() {
         return;
       }
 
-      if (!database?.id) {
-        return;
-      }
-
       setIsFetching(true);
 
-      supabase
-        .from("participants")
-        .select("*, channel (*)")
-        .eq("profile", database.id)
+      supabase.auth
+        .getUser()
+        .then(({ data, error }) => {
+          if (error) {
+            throw error;
+          }
+
+          if (!data) {
+            throw new Error("No user found");
+          }
+
+          const { user } = data;
+          return supabase
+            .from("participants")
+            .select("*, channel (*)")
+            .eq("profile", user.id);
+        })
+
         .then(({ data, error }) => {
           setIsFetching(false);
+          if (error) {
+            throw error;
+          }
 
-          console.log(data, error);
           if (!data) {
             setChannels([]);
             return;
           }
 
           setChannels(data.map((partipant: Participant) => partipant.channel));
+        })
+        .catch((error) => {
+          setChannels([]);
+          console.error(error);
         });
-    }, []),
+    }, [])
   );
 
   const onPressCreatePrix = async () => {
@@ -64,8 +80,9 @@ function Home() {
       <Button
         title="Supabase Test"
         onPress={async () => {
+          console.log("Supabase Test");
           try {
-            const themes = await supabase.from("theme").select("name");
+            const themes = await supabase.from("themes").select("name");
             console.log(themes);
           } catch (error) {
             console.error(error);

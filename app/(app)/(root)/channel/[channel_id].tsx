@@ -11,21 +11,21 @@ import { useSession } from "../../../../providers/useSession";
 import { useLocalSearchParams } from "expo-router";
 
 function Channel() {
-  const { id } = useLocalSearchParams();
-  const { email, database } = useSession();
+  const { channel_id } = useLocalSearchParams();
+  const { userId } = useSession();
   const [users, setUsers] = useState<Profile[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    console.log("Channel id", id);
-    if (!id || !database) {
+    console.log("Channel id", channel_id);
+    if (!channel_id || !userId) {
       return;
     }
 
     supabase
       .from("participants")
       .select("*, profile (*)")
-      .eq("channel", id)
+      .eq("channel", channel_id)
       // .neq("profile", database.id)
       .then(({ data }) => {
         console.log("Data", data);
@@ -37,14 +37,14 @@ function Channel() {
         setUsers(
           data.map((partipant: Participant) => {
             return partipant.profile;
-          }),
+          })
         );
       });
 
     supabase
       .from("events")
       .select("*, theme (*)")
-      .eq("channel", id)
+      .eq("channel", channel_id)
       .then(({ data }) => {
         if (!data) {
           setEvents([]);
@@ -65,11 +65,11 @@ function Channel() {
         );
       })}
 
-      {events.map((event) => {
+      {events.map(({ id, theme }) => {
         return (
-          <View>
-            <Text>{event.theme.title}</Text>
-            <Text>{event.theme.title}</Text>
+          <View key={id}>
+            <Text>{theme.title}</Text>
+            <Text>{theme.description}</Text>
           </View>
         );
       })}
