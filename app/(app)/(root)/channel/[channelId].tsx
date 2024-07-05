@@ -17,7 +17,6 @@ function Channel() {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    console.log("Channel id", channelId);
     if (!channelId || !userId) {
       return;
     }
@@ -26,9 +25,8 @@ function Channel() {
       .from("participants")
       .select("*, profile (*)")
       .eq("channel", channelId)
-      // .neq("profile", database.id)
+      // .neq("profile", supabaseUserId)
       .then(({ data }) => {
-        console.log("Data", data);
         if (!data) {
           setUsers([]);
           return;
@@ -57,10 +55,10 @@ function Channel() {
 
   return (
     <View>
-      {users.map((user) => {
+      {users.map(({ user_id, email }) => {
         return (
-          <View key={user.id}>
-            <Text>{user.email}</Text>
+          <View key={user_id}>
+            <Text>{email}</Text>
           </View>
         );
       })}
