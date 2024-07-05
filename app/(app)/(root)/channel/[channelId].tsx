@@ -11,21 +11,21 @@ import { useSession } from "../../../../providers/useSession";
 import { useLocalSearchParams } from "expo-router";
 
 function Channel() {
-  const { channel_id } = useLocalSearchParams();
+  const { channelId } = useLocalSearchParams();
   const { userId } = useSession();
   const [users, setUsers] = useState<Profile[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    console.log("Channel id", channel_id);
-    if (!channel_id || !userId) {
+    console.log("Channel id", channelId);
+    if (!channelId || !userId) {
       return;
     }
 
     supabase
       .from("participants")
       .select("*, profile (*)")
-      .eq("channel", channel_id)
+      .eq("channel", channelId)
       // .neq("profile", database.id)
       .then(({ data }) => {
         console.log("Data", data);
@@ -44,7 +44,7 @@ function Channel() {
     supabase
       .from("events")
       .select("*, theme (*)")
-      .eq("channel", channel_id)
+      .eq("channel", channelId)
       .then(({ data }) => {
         if (!data) {
           setEvents([]);
