@@ -1,13 +1,15 @@
 import { useCallback, useState } from "react";
-import { Button, Pressable, Text, View } from "react-native";
+import { FlatList } from "react-native";
+import { Button, ListItem, Text, View } from "react-native-ui-lib";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
 import { Channel, Participant } from "../../../constants";
+import PageView from "../../../components/PageView";
 
 function Home() {
   const router = useRouter();
-  const { signOut, email } = useSession();
+  const { signOut } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -66,31 +68,31 @@ function Home() {
   };
 
   return (
-    <View>
-      <Text>{email}</Text>
-      {channels.map(({ id, title, description }) => {
-        return (
-          <Pressable key={id} onPress={() => onPressChannel(id)}>
-            <Text>{title}</Text>
-            <Text>{description}</Text>
-          </Pressable>
-        );
-      })}
-      <Button title="Create Prix" onPress={onPressCreatePrix} />
-      <Button
-        title="Supabase Test"
-        onPress={async () => {
-          console.log("Supabase Test");
-          try {
-            const themes = await supabase.from("themes").select("name");
-            console.log(themes);
-          } catch (error) {
-            console.error(error);
-          }
-        }}
+    <PageView>
+      <Button onPress={onPressCreatePrix}>
+        <Text>Create Channel</Text>
+      </Button>
+
+      <FlatList
+        data={channels}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ListItem
+            onPress={() => onPressChannel(item.id)}
+            containerStyle={{ padding: 16 }}
+          >
+            <ListItem.Part column>
+              <Text>{item.title}</Text>
+              <Text>{item.description}</Text>
+            </ListItem.Part>
+          </ListItem>
+        )}
       />
-      <Button title="Sign Out" onPress={signOut} />
-    </View>
+
+      <Button onPress={signOut}>
+        <Text>Sign Out</Text>
+      </Button>
+    </PageView>
   );
 }
 

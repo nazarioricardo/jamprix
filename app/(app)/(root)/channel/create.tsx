@@ -7,12 +7,12 @@ function ChannelCreate() {
       initialValues={{ email: "" }}
       onSubmit={(values) => console.log(values)}
     >
-      {({ handleChange, handleBlur, handleSubmit, values }) => (
+      {({ handleChange, handleBlur, handleSubmit, values: { email } }) => (
         <View>
           <TextInput
             onChangeText={handleChange("email")}
             onBlur={handleBlur("email")}
-            value={values.email}
+            value={email}
           />
           <Button onPress={() => handleSubmit()} title="Submit" />
         </View>
