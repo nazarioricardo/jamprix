@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { Button, ListItem, Text, View } from "react-native-ui-lib";
+import { Button, Card, Text } from "react-native-ui-lib";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
@@ -35,7 +35,7 @@ function Home() {
           const { user } = data;
           return supabase
             .from("participants")
-            .select("*, channel (*)")
+            .select(`*, channel (*, created_by(*))`)
             .eq("profile", user.id);
         })
 
@@ -63,8 +63,16 @@ function Home() {
     router.navigate("channel/create");
   };
 
-  const onPressChannel = (id: string) => {
-    router.navigate({ pathname: `channel/[id]`, params: { id } });
+  const onPressChannel = (channel: Channel) => {
+    const { created_by, ...rest } = channel;
+    router.navigate({
+      pathname: `channel/[id]`,
+      params: {
+        ...rest,
+        createdBy: created_by.email,
+        createdById: created_by.user_id,
+      },
+    });
   };
 
   return (
@@ -75,18 +83,19 @@ function Home() {
 
       <FlatList
         data={channels}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ListItem
-            onPress={() => onPressChannel(item.id)}
-            containerStyle={{ padding: 16 }}
-          >
-            <ListItem.Part column>
-              <Text>{item.title}</Text>
-              <Text>{item.description}</Text>
-            </ListItem.Part>
-          </ListItem>
-        )}
+        keyExtractor={(channel) => channel.id}
+        renderItem={({ item: channel }) => {
+          return (
+            <Card
+              onPress={() => onPressChannel(channel)}
+              containerStyle={{ padding: 16 }}
+            >
+              <Text text60BO>{channel.title}</Text>
+              <Text text80>{channel.description}</Text>
+              <Text text100L>by {channel.created_by.email}</Text>
+            </Card>
+          );
+        }}
       />
 
       <Button onPress={signOut}>

@@ -74,16 +74,13 @@ function SessionProvider(props: SessionProviderProps) {
       throw error;
     }
 
-    console.log(musicData);
-
     const dbCredentials = {
       email: musicData.email,
       password: `${musicData.id}:${PASSWORD}`,
     };
 
     try {
-      const { data, error } = await supabase.auth.signUp(dbCredentials);
-      console.log(data);
+      const { error } = await supabase.auth.signUp(dbCredentials);
 
       if (error && error.message === "User already registered") {
         await supabase.auth.signInWithPassword(dbCredentials);

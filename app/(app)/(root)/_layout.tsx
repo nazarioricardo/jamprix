@@ -21,8 +21,15 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="channel/create" />
+    <Stack initialRouteName="index">
+      <Stack.Screen name="index" options={{ title: "Home" }} />
+      <Stack.Screen name="channel/[channelId]" options={{ title: "Channel" }} />
+      <Stack.Screen
+        name="channel/create"
+        options={{
+          title: "Create Channel",
+        }}
+      />
     </Stack>
   );
 }
