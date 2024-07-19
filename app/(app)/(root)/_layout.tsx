@@ -27,7 +27,15 @@ export default function RootLayout() {
       <Stack.Screen
         name="channel/create"
         options={{
+          presentation: "modal",
           title: "Create Channel",
+        }}
+      />
+      <Stack.Screen
+        name="submit"
+        options={{
+          presentation: "modal",
+          title: "Submit",
         }}
       />
     </Stack>

@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../supabase/initSupabase";
 import { useSession } from "../../../../providers/useSession";
 import { Stack, useLocalSearchParams } from "expo-router";
+import EventCard from "../../../../components/EventCard";
+import PageView from "../../../../components/PageView";
 
 type ChannelSearchParams = {
   channelId: string;
@@ -48,7 +50,7 @@ function Channel() {
             .map((partipant: Participant) => {
               return partipant.profile;
             })
-            .filter(({ user_id }) => user_id === userId)
+            .filter(({ user_id }) => user_id === userId),
         );
       });
 
@@ -62,6 +64,8 @@ function Channel() {
           throw error;
         }
 
+        console.log("events", data);
+
         if (!data) {
           setEvents([]);
           return;
@@ -74,26 +78,29 @@ function Channel() {
   return (
     <>
       <Stack.Screen options={{ title: title }} />
-      <Text>{description}</Text>
-      <Text>Created by {createdBy}</Text>
-      <View>
-        {users.map(({ user_id, email }) => {
-          return (
-            <View key={user_id}>
-              <Text>{email}</Text>
-            </View>
-          );
-        })}
+      <PageView>
+        <Text>{description}</Text>
+        <Text>Created by {createdBy}</Text>
+        <View>
+          {users.map(({ user_id, email }) => {
+            return (
+              <View key={user_id}>
+                <Text>{email}</Text>
+              </View>
+            );
+          })}
 
-        {events.map(({ id, theme }) => {
-          return (
-            <View key={id}>
-              <Text>{theme.title}</Text>
-              <Text>{theme.description}</Text>
-            </View>
-          );
-        })}
-      </View>
+          {events.map(({ id, theme }) => {
+            return (
+              <EventCard
+                key={id}
+                title={theme.title}
+                description={theme.description}
+              />
+            );
+          })}
+        </View>
+      </PageView>
     </>
   );
 }

@@ -56,7 +56,7 @@ function Home() {
           setChannels([]);
           console.error(error);
         });
-    }, [])
+    }, []),
   );
 
   const onPressCreatePrix = async () => {
@@ -77,9 +77,7 @@ function Home() {
 
   return (
     <PageView>
-      <Button onPress={onPressCreatePrix}>
-        <Text>Create Channel</Text>
-      </Button>
+      <Button label="Create a Channel" onPress={onPressCreatePrix} />
 
       <FlatList
         data={channels}
@@ -98,9 +96,7 @@ function Home() {
         }}
       />
 
-      <Button onPress={signOut}>
-        <Text>Sign Out</Text>
-      </Button>
+      <Button label="Sign Out" onPress={signOut} />
     </PageView>
   );
 }
