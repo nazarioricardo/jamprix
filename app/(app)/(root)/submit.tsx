@@ -27,6 +27,7 @@ function Submit() {
   const { access_token } = useSession();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const [isFetching, setIsFetching] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
   const [track, setTrack] = useState<Track | null>(null);
 
   const fetchTrack = async (uri: string) => {
@@ -87,6 +88,8 @@ function Submit() {
       return;
     }
 
+    setIsPosting(true);
+
     try {
       const {
         data: { user },
@@ -98,6 +101,7 @@ function Submit() {
       }
 
       if (!user) {
+        setIsPosting(false);
         throw new Error("No user found");
       }
 
@@ -111,16 +115,20 @@ function Submit() {
       );
 
       if (response.error) {
+        setIsPosting(false);
         throw response.error;
       }
     } catch (error) {
       console.error(error);
     }
+
+    setIsPosting(false);
   };
 
   return (
     <PageView>
       {isFetching ? <Text>Loading...</Text> : null}
+      {isPosting ? <Text>Submitting...</Text> : null}
       {track ? (
         <>
           <Text>
