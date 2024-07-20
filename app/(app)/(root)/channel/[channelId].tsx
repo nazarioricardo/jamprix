@@ -50,7 +50,7 @@ function Channel() {
             .map((partipant: Participant) => {
               return partipant.profile;
             })
-            .filter(({ user_id }) => user_id === userId),
+            .filter(({ user_id }) => user_id === userId)
         );
       });
 
@@ -94,6 +94,7 @@ function Channel() {
             return (
               <EventCard
                 key={id}
+                id={id}
                 title={theme.title}
                 description={theme.description}
               />

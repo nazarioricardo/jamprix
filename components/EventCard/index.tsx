@@ -2,17 +2,21 @@ import { useRouter } from "expo-router";
 import { Card, Text, Button } from "react-native-ui-lib";
 
 type EventCardProps = {
+  id: string;
   title: string;
   description: string;
 };
 
-function EventCard({ title, description }: EventCardProps) {
+function EventCard({ id, title, description }: EventCardProps) {
   const router = useRouter();
 
   const onPressFindYourSong = () => {
-    console.log("Find Your Song");
-    router.navigate("submit");
+    router.navigate({
+      pathname: "submit",
+      params: { eventId: id },
+    });
   };
+
   return (
     <Card containerStyle={{ padding: 16 }}>
       <Text text60BO>{title}</Text>
