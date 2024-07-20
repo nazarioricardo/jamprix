@@ -1,6 +1,6 @@
 import { makeRedirectUri } from "expo-auth-session";
 
-export const SPOTIFY_ID = "ececd6b085a7423ea9310edcb4fff94f";
+export const SPOTIFY_CLIENT_ID = "ececd6b085a7423ea9310edcb4fff94f";
 export const SPOTIFY_SECRET = "a4c0f07cd1ba485fbd886fc3a22728f2";
 export const SPOTIFY_DISCOVERY = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -21,7 +21,7 @@ export const REDIRECT_URI = makeRedirectUri({
 });
 
 export const config = {
-  clientId: SPOTIFY_ID,
+  clientId: SPOTIFY_CLIENT_ID,
   clientSecret: SPOTIFY_SECRET,
   scopes: SPOTIFY_SCOPES,
   usePKCE: false,

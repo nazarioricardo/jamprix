@@ -6,7 +6,7 @@ import { useSession } from "../../providers/useSession";
 import {
   REDIRECT_URI,
   SPOTIFY_DISCOVERY,
-  SPOTIFY_ID,
+  SPOTIFY_CLIENT_ID,
   SPOTIFY_SECRET,
   config,
 } from "./constants";
@@ -21,7 +21,7 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
 
   const [request, response, promptAsync] = useAuthRequest(
     config,
-    SPOTIFY_DISCOVERY,
+    SPOTIFY_DISCOVERY
   );
 
   const onPressSpotifySignIn = () => {
@@ -38,7 +38,7 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
           {
             code,
             grant_type: "authorization_code",
-            client_id: SPOTIFY_ID,
+            client_id: SPOTIFY_CLIENT_ID,
             client_secret: SPOTIFY_SECRET,
             redirect_uri: REDIRECT_URI,
           },
@@ -46,12 +46,12 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
-          },
+          }
         )
         .then(({ data }) => {
           if (!signIn) {
             throw new Error(
-              "Unable to set token: AuthContext instance not found.",
+              "Unable to set token: AuthContext instance not found."
             );
           }
 

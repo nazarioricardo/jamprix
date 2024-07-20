@@ -1,8 +1,12 @@
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import { router } from "expo-router";
 import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
 import { supabase } from "../supabase/initSupabase";
+import {
+  SPOTIFY_CLIENT_ID,
+  SPOTIFY_SECRET,
+} from "../components/SpotifySignIn/constants";
 
 const PASSWORD = "T_6*xMPseYLg6cYyGgqma@9AX!Lq3Vdw26Xn";
 
@@ -14,6 +18,7 @@ export enum Provider {
 type AuthData = {
   access_token: string | null;
   refresh_token: string | null;
+  expires_in: number;
   provider: Provider | null;
 };
 
@@ -41,20 +46,21 @@ function SessionProvider(props: SessionProviderProps) {
     useStorageState("access_token");
   const [[isLoadingRefreshToken, refreshToken], setRefreshToken] =
     useStorageState("refresh_token");
+  const [[isLoadingExpiration, expiration], setExpiration] =
+    useStorageState("expiration");
   const [[isLoadingProvider, provider], setProvider] =
     useStorageState("provider");
 
-  const isLoadingMusic =
-    isLoadingUserId ||
-    isLoadingAccessToken ||
-    isLoadingRefreshToken ||
-    isLoadingProvider;
-
-  const isLoading = isLoadingEmail || isLoadingMusic;
+  const setValidExpiration = (expiresIn: number) => {
+    const currentTime = new Date().getTime();
+    const expirationTime = expiresIn + currentTime;
+    setExpiration(expirationTime + "");
+  };
 
   const signIn = async ({
     access_token,
     refresh_token,
+    expires_in,
     provider: session_provider,
   }: AuthData) => {
     let musicData;
@@ -96,6 +102,7 @@ function SessionProvider(props: SessionProviderProps) {
     setAccessToken(access_token);
     setRefreshToken(refresh_token);
     setProvider(session_provider);
+    setValidExpiration(expires_in);
   };
 
   const signOut = () => {
@@ -104,14 +111,83 @@ function SessionProvider(props: SessionProviderProps) {
     setAccessToken(null);
     setRefreshToken(null);
     setProvider(null);
+    setExpiration(null);
     supabase.auth.signOut();
 
-    if (router.canDismiss()) {
-      router.dismiss();
+    router.navigate("/login");
+  };
+
+  const refreshIfNeeded = async () => {
+    if (!expiration) {
+      console.warn("Expiration is not set. Signing Out.");
+      signOut();
+      return;
+    }
+
+    const currentTime = new Date().getTime();
+    const expirationTime = Number(expiration);
+
+    if (currentTime > expirationTime) {
+      try {
+        const { data } = await spotifyRequest.post(
+          "https://accounts.spotify.com/api/token",
+          {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+            client_id: SPOTIFY_CLIENT_ID,
+            client_secret: SPOTIFY_SECRET,
+          },
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+
+        await supabase.auth.refreshSession();
+
+        const { access_token, expires_in } = data;
+        setAccessToken(access_token);
+        setValidExpiration(expires_in);
+      } catch (error) {
+        console.error("Error Refreshing Token:", error);
+        signOut();
+        throw error;
+      }
     } else {
-      router.navigate("/login");
+      console.log("Token is still valid");
     }
   };
+
+  const isAuthenticated = () => {
+    if (
+      !accessToken ||
+      !refreshToken ||
+      !expiration ||
+      !provider ||
+      !email ||
+      !userId
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isLoadingMusic =
+    isLoadingUserId ||
+    isLoadingAccessToken ||
+    isLoadingRefreshToken ||
+    isLoadingProvider ||
+    isLoadingExpiration;
+
+  const isLoading = isLoadingEmail || isLoadingMusic;
+
+  useEffect(() => {
+    if (!isLoading) {
+      refreshIfNeeded();
+    }
+  }, [isLoading]);
 
   return (
     <SessionContext.Provider

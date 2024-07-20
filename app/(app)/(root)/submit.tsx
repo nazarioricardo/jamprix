@@ -5,7 +5,7 @@ import PageView from "../../../components/PageView";
 import { spotifyRequest } from "../../../request";
 import * as Clipboard from "expo-clipboard";
 import { useSession } from "../../../providers/useSession";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Button } from "react-native-ui-lib";
 import { supabase } from "../../../supabase/initSupabase";
 
@@ -26,6 +26,8 @@ const TEST =
 function Submit() {
   const { access_token } = useSession();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
+  const router = useRouter();
+
   const [isFetching, setIsFetching] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [track, setTrack] = useState<Track | null>(null);
@@ -93,11 +95,11 @@ function Submit() {
     try {
       const {
         data: { user },
-        error,
+        error: authError,
       } = await supabase.auth.getUser();
 
-      if (error) {
-        throw error;
+      if (authError) {
+        throw authError;
       }
 
       if (!user) {
@@ -105,7 +107,7 @@ function Submit() {
         throw new Error("No user found");
       }
 
-      const response = await supabase.from("submissions").upsert(
+      const { error } = await supabase.from("submissions").upsert(
         {
           spotify_id: track.id,
           profile: user.id,
@@ -114,14 +116,15 @@ function Submit() {
         { onConflict: "event, profile" }
       );
 
-      if (response.error) {
+      if (error) {
         setIsPosting(false);
-        throw response.error;
+        throw error;
       }
     } catch (error) {
       console.error(error);
     }
 
+    router.dismiss();
     setIsPosting(false);
   };
 

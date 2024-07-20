@@ -54,9 +54,15 @@ function Home() {
         })
         .catch((error) => {
           setChannels([]);
-          console.error(error);
+          console.error("Channel Fetch Error:", error);
+          if (
+            (error === "Auth session missing!" || error === "No user found") &&
+            signOut
+          ) {
+            signOut();
+          }
         });
-    }, []),
+    }, [])
   );
 
   const onPressCreatePrix = async () => {

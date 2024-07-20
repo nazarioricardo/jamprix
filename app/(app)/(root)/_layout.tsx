@@ -4,15 +4,15 @@ import { useSession } from "../../../providers/useSession";
 import { useEffect } from "react";
 
 export default function RootLayout() {
-  const { userId, isLoading } = useSession();
+  const { userId, isLoading, signOut } = useSession();
 
   useEffect(() => {
     if (isLoading) {
       return;
     }
 
-    if (!userId) {
-      router.navigate("/login");
+    if (!userId && signOut) {
+      signOut();
     }
   }, [userId, isLoading]);
 
