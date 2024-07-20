@@ -101,11 +101,14 @@ function Submit() {
         throw new Error("No user found");
       }
 
-      const response = await supabase.from("submissions").upsert({
-        spotify_id: track.id,
-        profile: user.id,
-        event: eventId,
-      });
+      const response = await supabase.from("submissions").upsert(
+        {
+          spotify_id: track.id,
+          profile: user.id,
+          event: eventId,
+        },
+        { onConflict: "event, profile" }
+      );
 
       if (response.error) {
         throw response.error;
