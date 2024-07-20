@@ -34,7 +34,6 @@ function Submit() {
       return;
     }
 
-    console.log("URI", uri);
     const trackIdMatch = uri.match(/track\/([a-zA-Z0-9]+)(?:\?|$)/);
     if (!trackIdMatch) {
       console.error("Invalid Spotify link");
@@ -44,7 +43,7 @@ function Submit() {
     setIsFetching(true);
 
     const trackId = trackIdMatch[1];
-    console.log("access_token", access_token);
+
     try {
       const response = await spotifyRequest.get(
         `https://api.spotify.com/v1/tracks/${trackId}`,
@@ -84,7 +83,6 @@ function Submit() {
   );
 
   const onPressSubmit = async () => {
-    console.log("Submitting", track?.name, "event id", eventId);
     if (!track) {
       return;
     }
@@ -112,8 +110,6 @@ function Submit() {
       if (response.error) {
         throw response.error;
       }
-
-      console.log("Submission", response);
     } catch (error) {
       console.error(error);
     }
