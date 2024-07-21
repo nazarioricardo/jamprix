@@ -9,7 +9,7 @@ import PageView from "../../../components/PageView";
 
 function Home() {
   const router = useRouter();
-  const { signOut } = useSession();
+  const { signOut, dbUserId } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -21,24 +21,10 @@ function Home() {
 
       setIsFetching(true);
 
-      supabase.auth
-        .getUser()
-        .then(({ data, error }) => {
-          if (error) {
-            throw error;
-          }
-
-          if (!data) {
-            throw new Error("No user found");
-          }
-
-          const { user } = data;
-          return supabase
-            .from("participants")
-            .select(`*, channel (*, created_by(*))`)
-            .eq("profile", user.id);
-        })
-
+      supabase
+        .from("participants")
+        .select(`*, channel (*, created_by(*))`)
+        .eq("profile", dbUserId)
         .then(({ data, error }) => {
           setIsFetching(false);
           if (error) {
@@ -51,16 +37,6 @@ function Home() {
           }
 
           setChannels(data.map((partipant: Participant) => partipant.channel));
-        })
-        .catch((error) => {
-          setChannels([]);
-          console.error("Channel Fetch Error:", error);
-          if (
-            (error === "Auth session missing!" || error === "No user found") &&
-            signOut
-          ) {
-            signOut();
-          }
         });
     }, [])
   );

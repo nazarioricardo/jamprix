@@ -20,11 +20,11 @@ type Track = {
   image: string;
 };
 
-const TEST =
+const TEST_TRACK =
   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
 
 function Submit() {
-  const { access_token } = useSession();
+  const { access_token, dbUserId } = useSession();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const router = useRouter();
 
@@ -93,24 +93,10 @@ function Submit() {
     setIsPosting(true);
 
     try {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError) {
-        throw authError;
-      }
-
-      if (!user) {
-        setIsPosting(false);
-        throw new Error("No user found");
-      }
-
       const { error } = await supabase.from("submissions").upsert(
         {
           spotify_id: track.id,
-          profile: user.id,
+          profile: dbUserId,
           event: eventId,
         },
         { onConflict: "event, profile" }

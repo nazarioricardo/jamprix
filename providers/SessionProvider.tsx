@@ -28,6 +28,7 @@ export type Session = AuthData & {
 
 type SessionContextProps = {
   email: string | null;
+  dbUserId: string | null;
   signIn: (data: AuthData) => void;
   signOut: () => void;
   isLoading: boolean;
@@ -42,6 +43,8 @@ type SessionProviderProps = {
 function SessionProvider(props: SessionProviderProps) {
   const [[isLoadingEmail, email], setEmail] = useStorageState("email");
   const [[isLoadingUserId, userId], setUserId] = useStorageState("user_id");
+  const [[isLoadingDbUserId, dbUserId], setDbUserId] =
+    useStorageState("db_user_id");
   const [[isLoadingAccessToken, accessToken], setAccessToken] =
     useStorageState("access_token");
   const [[isLoadingRefreshToken, refreshToken], setRefreshToken] =
@@ -85,20 +88,36 @@ function SessionProvider(props: SessionProviderProps) {
       password: `${musicData.id}:${PASSWORD}`,
     };
 
+    let supabaseUser;
     try {
-      const { error } = await supabase.auth.signUp(dbCredentials);
+      const { data, error } = await supabase.auth.signUp(dbCredentials);
 
       if (error && error.message === "User already registered") {
-        await supabase.auth.signInWithPassword(dbCredentials);
+        const { data, error } = await supabase.auth.signInWithPassword(
+          dbCredentials
+        );
+
+        if (error) {
+          throw error;
+        }
+
+        supabaseUser = data.user;
       } else if (error) {
-        throw new Error("No Database Session");
+        throw error;
+      } else {
+        supabaseUser = data.user;
       }
     } catch (error) {
       throw error;
     }
 
+    if (supabaseUser === null) {
+      throw new Error("Db user not found");
+    }
+
     setEmail(musicData.email);
     setUserId(musicData.id);
+    setDbUserId(supabaseUser.id);
     setAccessToken(access_token);
     setRefreshToken(refresh_token);
     setProvider(session_provider);
@@ -161,6 +180,7 @@ function SessionProvider(props: SessionProviderProps) {
 
   const isLoadingMusic =
     isLoadingUserId ||
+    isLoadingDbUserId ||
     isLoadingAccessToken ||
     isLoadingRefreshToken ||
     isLoadingProvider ||
@@ -179,6 +199,7 @@ function SessionProvider(props: SessionProviderProps) {
       value={{
         userId,
         email,
+        dbUserId,
         access_token: accessToken,
         refresh_token: refreshToken,
         provider: provider as Provider | null, // why tho?
