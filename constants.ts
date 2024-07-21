@@ -39,3 +39,12 @@ export type Event = {
   theme: Theme;
   channel: Channel;
 };
+
+export type Submission = {
+  profile: string;
+  event: number;
+  apple_id: string | null;
+  spotify_id: string | null;
+  created_at: string;
+  updated_at: string;
+};

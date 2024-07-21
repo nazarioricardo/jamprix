@@ -125,7 +125,6 @@ function Submit() {
     }
 
     router.dismiss();
-    setIsPosting(false);
   };
 
   return (
@@ -146,6 +145,7 @@ function Submit() {
       ) : null}
       <Button label="Paste Link" onPress={pasteSong} />
       <Button label="Submit" disabled={!track} onPress={onPressSubmit} />
+      <Button label="Cancel" onPress={() => router.dismiss()} />
     </PageView>
   );
 }
