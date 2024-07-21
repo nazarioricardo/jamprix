@@ -159,21 +159,6 @@ function SessionProvider(props: SessionProviderProps) {
     }
   };
 
-  const isAuthenticated = () => {
-    if (
-      !accessToken ||
-      !refreshToken ||
-      !expiration ||
-      !provider ||
-      !email ||
-      !userId
-    ) {
-      return false;
-    }
-
-    return true;
-  };
-
   const isLoadingMusic =
     isLoadingUserId ||
     isLoadingAccessToken ||
