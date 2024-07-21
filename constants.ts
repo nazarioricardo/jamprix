@@ -48,3 +48,14 @@ export type Submission = {
   created_at: string;
   updated_at: string;
 };
+
+export type Track = {
+  id: string;
+  artist: string;
+  album: string;
+  name: string;
+  href: string;
+  uri: string;
+  preview_url: string;
+  image: string;
+};

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { TextInput, Image } from "react-native";
+import { useCallback, useState } from "react";
+import { Image } from "react-native";
 import { Text } from "react-native-ui-lib";
 import PageView from "../../../components/PageView";
 import { spotifyRequest } from "../../../request";
@@ -8,17 +8,8 @@ import { useSession } from "../../../providers/useSession";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Button } from "react-native-ui-lib";
 import { supabase } from "../../../supabase/initSupabase";
-
-type Track = {
-  id: string;
-  artist: string;
-  album: string;
-  name: string;
-  href: string;
-  uri: string;
-  preview_url: string;
-  image: string;
-};
+import { Track } from "../../../constants";
+import { parseTrack } from "../../../utils";
 
 const TEST_TRACK =
   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
@@ -57,16 +48,7 @@ function Submit() {
         }
       );
 
-      setTrack({
-        id: response.data.id,
-        artist: response.data.artists[0].name,
-        album: response.data.album.name,
-        name: response.data.name,
-        href: response.data.external_urls.spotify,
-        uri: response.data.uri,
-        preview_url: response.data.preview_url,
-        image: response.data.album.images[0].url,
-      });
+      setTrack(parseTrack(response.data));
     } catch (error) {
       console.error(error);
     }

@@ -35,6 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "spotify-types": "^1.0.7",
     "typescript": "^5.1.3"
   },
   "private": true
