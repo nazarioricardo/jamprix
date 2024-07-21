@@ -3,12 +3,6 @@ import { router } from "expo-router";
 import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
 import { supabase } from "../supabase/initSupabase";
-import {
-  SPOTIFY_CLIENT_ID,
-  SPOTIFY_SECRET,
-} from "../components/SpotifySignIn/constants";
-
-const PASSWORD = "T_6*xMPseYLg6cYyGgqma@9AX!Lq3Vdw26Xn";
 
 export enum Provider {
   APPLE = "apple",
@@ -85,7 +79,7 @@ function SessionProvider(props: SessionProviderProps) {
 
     const dbCredentials = {
       email: musicData.email,
-      password: `${musicData.id}:${PASSWORD}`,
+      password: `${musicData.id}:${process.env.EXPO_PUBLIC_SUPABASE_PW}`,
     };
 
     let supabaseUser;
@@ -153,8 +147,8 @@ function SessionProvider(props: SessionProviderProps) {
           {
             grant_type: "refresh_token",
             refresh_token: refreshToken,
-            client_id: SPOTIFY_CLIENT_ID,
-            client_secret: SPOTIFY_SECRET,
+            client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
+            client_secret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET,
           },
           {
             headers: {

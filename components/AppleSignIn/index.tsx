@@ -7,7 +7,8 @@ import {
   signInAsync,
 } from "expo-apple-authentication";
 import axios from "axios";
-import { APPLE_PLAYLISTS_URL } from "../../constants";
+
+const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn() {
   const onPressAppleSignIn = async () => {

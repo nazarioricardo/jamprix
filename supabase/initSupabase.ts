@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_KEY, SUPABASE_URL } from "../constants";
 
-// Better put your these secret keys in .env file
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_KEY || "";
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     detectSessionInUrl: false,

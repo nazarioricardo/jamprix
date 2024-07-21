@@ -3,13 +3,7 @@ import { StyleSheet, Text, Pressable } from "react-native";
 import axios from "axios";
 import { useAuthRequest } from "expo-auth-session";
 import { useSession } from "../../providers/useSession";
-import {
-  REDIRECT_URI,
-  SPOTIFY_DISCOVERY,
-  SPOTIFY_CLIENT_ID,
-  SPOTIFY_SECRET,
-  config,
-} from "./constants";
+import { REDIRECT_URI, SPOTIFY_DISCOVERY, SPOTIFY_SCOPES } from "./constants";
 import { Provider } from "../../providers/SessionProvider";
 
 type SpotifySignInProps = {
@@ -20,7 +14,17 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
   const { signIn } = useSession();
 
   const [request, response, promptAsync] = useAuthRequest(
-    config,
+    {
+      clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
+      clientSecret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET || "",
+      scopes: SPOTIFY_SCOPES,
+      usePKCE: false,
+      responseType: "code",
+      extraParams: {
+        access_type: "offline",
+      },
+      redirectUri: REDIRECT_URI,
+    },
     SPOTIFY_DISCOVERY
   );
 
@@ -29,7 +33,6 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
   };
 
   useEffect(() => {
-    console.log("REDIRECT URI", REDIRECT_URI);
     if (response?.type === "success") {
       const { code } = response.params;
       axios
@@ -38,8 +41,8 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
           {
             code,
             grant_type: "authorization_code",
-            client_id: SPOTIFY_CLIENT_ID,
-            client_secret: SPOTIFY_SECRET,
+            client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
+            client_secret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET,
             redirect_uri: REDIRECT_URI,
           },
           {
