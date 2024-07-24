@@ -27,6 +27,18 @@ function EventCard({ id, title, description }: EventCardProps) {
     });
   };
 
+  const onPressViewEvent = () => {
+    router.push({
+      pathname: "event/[eventId]",
+      params: {
+        id,
+        title,
+        description,
+        submissions: JSON.stringify(submissions),
+      },
+    });
+  };
+
   const fetchUserSubmission = async (spotifyId: string) => {
     const response = await axios.get(
       `https://api.spotify.com/v1/tracks/${spotifyId}`,
@@ -88,6 +100,7 @@ function EventCard({ id, title, description }: EventCardProps) {
       )}
 
       <Text>{submissions.length} total submissions</Text>
+      <Button label="View Event" onPress={onPressViewEvent} />
     </Card>
   );
 }

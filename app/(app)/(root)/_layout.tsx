@@ -31,6 +31,7 @@ export default function RootLayout() {
           title: "Create Channel",
         }}
       />
+      <Stack.Screen name="event/[eventId]" options={{ title: "Event" }} />
       <Stack.Screen
         name="submit"
         options={{
