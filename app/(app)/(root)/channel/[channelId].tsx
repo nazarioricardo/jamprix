@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import {
   Participant,
   type Profile,
@@ -89,17 +89,20 @@ function Channel() {
               </View>
             );
           })}
-
-          {events.map(({ id, theme }) => {
-            return (
-              <EventCard
-                key={id}
-                id={id}
-                title={theme.title}
-                description={theme.description}
-              />
-            );
-          })}
+          <FlatList
+            data={events}
+            keyExtractor={(event) => event.id}
+            renderItem={({ item: { id, theme } }) => {
+              return (
+                <EventCard
+                  key={id}
+                  id={id}
+                  title={theme.title}
+                  description={theme.description}
+                />
+              );
+            }}
+          />
         </View>
       </PageView>
     </>

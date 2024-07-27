@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Card, Text, Button } from "react-native-ui-lib";
 import { supabase } from "../../supabase/initSupabase";
 import Track from "../Track";
-import { Submission, type Track as TrackType } from "../../constants";
+import type { Submission, Track as TrackType } from "../../constants";
 import { useSession } from "../../providers/useSession";
 import { parseTrack } from "../../utils";
 import axios from "axios";
@@ -90,7 +90,10 @@ function EventCard({ id, title, description }: EventCardProps) {
       <Text text80>{description}</Text>
 
       {userTrack ? (
-        <Track {...userTrack} />
+        <>
+          <Track {...userTrack} />
+          <Button label="Change Your Song" onPress={onPressFindYourSong} />
+        </>
       ) : (
         <Button label="Add Your Song" onPress={onPressFindYourSong} />
       )}

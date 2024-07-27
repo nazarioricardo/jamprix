@@ -1,6 +1,6 @@
 import { Image } from "react-native";
 import { Text, View } from "react-native-ui-lib";
-import { Track } from "../../constants";
+import { type Track } from "../../constants";
 
 function Track({ name, artist, image, album }: Track) {
   return (
