@@ -8,8 +8,9 @@ import { useSession } from "../../../providers/useSession";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Button } from "react-native-ui-lib";
 import { supabase } from "../../../supabase/initSupabase";
-import { Track } from "../../../constants";
+import type { Track as TrackType } from "../../../constants";
 import { parseTrack } from "../../../utils";
+import Track from "../../../components/Track";
 
 const TEST_TRACK =
   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
@@ -21,7 +22,7 @@ function Submit() {
 
   const [isFetching, setIsFetching] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
-  const [track, setTrack] = useState<Track | null>(null);
+  const [track, setTrack] = useState<TrackType | null>(null);
 
   const fetchTrack = async (uri: string) => {
     if (uri === "") {
@@ -99,18 +100,7 @@ function Submit() {
     <PageView>
       {isFetching ? <Text>Loading...</Text> : null}
       {isPosting ? <Text>Submitting...</Text> : null}
-      {track ? (
-        <>
-          <Text>
-            {track.name} by {track.artist}
-          </Text>
-          <Image
-            style={{ width: 200, height: 200 }}
-            source={{ uri: track.image }}
-          />
-          <Text>{track.album}</Text>
-        </>
-      ) : null}
+      {track ? <Track {...track} /> : null}
       <Button label="Paste Link" onPress={pasteSong} />
       <Button label="Submit" disabled={!track} onPress={onPressSubmit} />
       <Button label="Cancel" onPress={() => router.dismiss()} />
