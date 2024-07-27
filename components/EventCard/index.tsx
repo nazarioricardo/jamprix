@@ -2,7 +2,8 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Card, Text, Button } from "react-native-ui-lib";
 import { supabase } from "../../supabase/initSupabase";
-import { Submission, Track } from "../../constants";
+import Track from "../Track";
+import { Submission, type Track as TrackType } from "../../constants";
 import { useSession } from "../../providers/useSession";
 import { parseTrack } from "../../utils";
 import axios from "axios";
@@ -17,7 +18,7 @@ function EventCard({ id, title, description }: EventCardProps) {
   const router = useRouter();
   const { dbUserId, access_token } = useSession();
 
-  const [userTrack, setUserTrack] = useState<Track | undefined>();
+  const [userTrack, setUserTrack] = useState<TrackType | undefined>();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   const onPressFindYourSong = () => {
@@ -89,12 +90,7 @@ function EventCard({ id, title, description }: EventCardProps) {
       <Text text80>{description}</Text>
 
       {userTrack ? (
-        <>
-          <Text text100L>
-            Your Song: {userTrack.name} by {userTrack.artist}
-          </Text>
-          <Button label="Change Your Song" onPress={onPressFindYourSong} />
-        </>
+        <Track {...userTrack} />
       ) : (
         <Button label="Add Your Song" onPress={onPressFindYourSong} />
       )}
