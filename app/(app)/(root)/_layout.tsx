@@ -2,6 +2,7 @@ import { Stack, router } from "expo-router";
 import { Text } from "react-native";
 import { useSession } from "../../../providers/useSession";
 import { useEffect } from "react";
+import ProfileButton from "../../../components/ProfileButton";
 
 export default function RootLayout() {
   const { userId, isLoading, signOut } = useSession();
@@ -21,7 +22,10 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack initialRouteName="index">
+    <Stack
+      initialRouteName="index"
+      screenOptions={{ headerRight: ProfileButton }}
+    >
       <Stack.Screen name="index" options={{ title: "Home" }} />
       <Stack.Screen name="channel/[channelId]" options={{ title: "Channel" }} />
       <Stack.Screen

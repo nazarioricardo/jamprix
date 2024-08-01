@@ -8,6 +8,13 @@ export default function AppLayout() {
         name="login"
         options={{ presentation: "modal", gestureEnabled: false }}
       />
+      <Stack.Screen
+        name="profile"
+        options={{
+          presentation: "modal",
+          title: "Profile",
+        }}
+      />
     </Stack>
   );
 }

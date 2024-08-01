@@ -77,8 +77,6 @@ function Home() {
           );
         }}
       />
-
-      <Button label="Sign Out" onPress={signOut} />
     </PageView>
   );
 }
