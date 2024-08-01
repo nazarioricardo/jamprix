@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react";
-import { Image } from "react-native";
-import { Text } from "react-native-ui-lib";
-import PageView from "../../../components/PageView";
+import { Text, View } from "react-native-ui-lib";
 import { spotifyRequest } from "../../../request";
 import * as Clipboard from "expo-clipboard";
 import { useSession } from "../../../providers/useSession";
@@ -97,14 +95,14 @@ function Submit() {
   };
 
   return (
-    <PageView>
+    <View>
       {isFetching ? <Text>Loading...</Text> : null}
       {isPosting ? <Text>Submitting...</Text> : null}
       {track ? <Track {...track} /> : null}
       <Button label="Paste Link" onPress={pasteSong} />
       <Button label="Submit" disabled={!track} onPress={onPressSubmit} />
       <Button label="Cancel" onPress={() => router.dismiss()} />
-    </PageView>
+    </View>
   );
 }
 

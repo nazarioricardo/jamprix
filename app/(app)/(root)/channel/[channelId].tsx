@@ -10,7 +10,6 @@ import { supabase } from "../../../../supabase/initSupabase";
 import { useSession } from "../../../../providers/useSession";
 import { Stack, useLocalSearchParams } from "expo-router";
 import EventCard from "../../../../components/EventCard";
-import PageView from "../../../../components/PageView";
 
 type ChannelSearchParams = {
   channelId: string;
@@ -78,7 +77,7 @@ function Channel() {
   return (
     <>
       <Stack.Screen options={{ title: title }} />
-      <PageView>
+      <View>
         <Text>{description}</Text>
         <Text>Created by {createdBy}</Text>
         <View>
@@ -104,7 +103,7 @@ function Channel() {
             }}
           />
         </View>
-      </PageView>
+      </View>
     </>
   );
 }

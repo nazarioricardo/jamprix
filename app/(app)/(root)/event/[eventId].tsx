@@ -1,7 +1,6 @@
 import { FlatList } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native-ui-lib";
-import PageView from "../../../../components/PageView";
 import type {
   Profile,
   Submission,
@@ -83,7 +82,7 @@ function Event() {
   return (
     <>
       <Stack.Screen options={{ title: title }} />
-      <PageView>
+      <View>
         <Text>{description}</Text>
         <FlatList
           data={submissions}
@@ -97,7 +96,7 @@ function Event() {
             );
           }}
         />
-      </PageView>
+      </View>
     </>
   );
 }

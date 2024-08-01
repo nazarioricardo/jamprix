@@ -1,11 +1,10 @@
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { Button, Card, Text } from "react-native-ui-lib";
+import { Button, Card, Text, View } from "react-native-ui-lib";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
 import { Channel, Participant } from "../../../constants";
-import PageView from "../../../components/PageView";
 
 function Home() {
   const router = useRouter();
@@ -58,7 +57,7 @@ function Home() {
   };
 
   return (
-    <PageView>
+    <View>
       <Button label="Create a Channel" onPress={onPressCreatePrix} />
 
       <FlatList
@@ -77,7 +76,7 @@ function Home() {
           );
         }}
       />
-    </PageView>
+    </View>
   );
 }
 
