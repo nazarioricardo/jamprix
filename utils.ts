@@ -1,4 +1,4 @@
-import { Track } from "./constants";
+import type { Track } from "./types";
 import { Track as SpotifyTrack } from "spotify-types";
 
 type ParseTrack = (track: SpotifyTrack) => Track;

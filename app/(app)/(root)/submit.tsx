@@ -5,7 +5,7 @@ import * as Clipboard from "expo-clipboard";
 import { spotifyRequest } from "../../../request";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
-import type { Track as TrackType } from "../../../constants";
+import type { Track as TrackType } from "../../../types";
 import { parseTrack } from "../../../utils";
 import Track from "../../../components/Track";
 

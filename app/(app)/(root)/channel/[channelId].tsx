@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
-import type {
-  Participant,
-  Profile,
-  Channel,
-  Event,
-} from "../../../../constants";
+import type { Participant, Profile, Channel, Event } from "../../../../types";
 import { supabase } from "../../../../supabase/initSupabase";
 import { useSession } from "../../../../providers/useSession";
 import EventCard from "../../../../components/EventCard";

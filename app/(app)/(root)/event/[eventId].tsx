@@ -4,7 +4,7 @@ import type {
   Profile,
   Submission,
   Track as TrackType,
-} from "../../../../constants";
+} from "../../../../types";
 import { supabase } from "../../../../supabase/initSupabase";
 import { useEffect, useState } from "react";
 import { spotifyRequest } from "../../../../request";

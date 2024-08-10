@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import { supabase } from "../../supabase/initSupabase";
 import Track from "../Track";
-import type { Submission, Track as TrackType } from "../../constants";
+import type { Submission, Track as TrackType } from "../../types";
 import { useSession } from "../../providers/useSession";
 import { parseTrack } from "../../utils";
 
