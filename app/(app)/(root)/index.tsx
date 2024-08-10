@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
-import { Button, Card, Text, View } from "react-native-ui-lib";
+import { Card, Text, View } from "react-native-ui-lib";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
@@ -8,7 +8,7 @@ import { Channel, Participant } from "../../../constants";
 
 function Home() {
   const router = useRouter();
-  const { signOut, dbUserId } = useSession();
+  const { dbUserId } = useSession();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -37,7 +37,7 @@ function Home() {
 
           setChannels(data.map((partipant: Participant) => partipant.channel));
         });
-    }, [])
+    }, []),
   );
 
   const onPressCreatePrix = async () => {
@@ -58,8 +58,6 @@ function Home() {
 
   return (
     <View>
-      <Button label="Create a Channel" onPress={onPressCreatePrix} />
-
       <FlatList
         data={channels}
         keyExtractor={(channel) => channel.id}
