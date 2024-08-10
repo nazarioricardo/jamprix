@@ -1,6 +1,6 @@
 import { Button, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useSession } from "../../providers/useSession";
+import { useSession } from "@/providers/useSession";
 
 function Profile() {
   const router = useRouter();

@@ -1,5 +1,5 @@
 import { Image, Text, View } from "react-native";
-import { type Track } from "../../types";
+import { type Track } from "@/types";
 
 function Track({ name, artist, image, album }: Track) {
   return (

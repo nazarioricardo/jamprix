@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Text, Button, View } from "react-native";
 import { useRouter } from "expo-router";
 import axios from "axios";
-import { supabase } from "../../supabase/initSupabase";
+import { supabase } from "@/supabase/initSupabase";
+import type { Submission, Track as TrackType } from "@/types";
+import { useSession } from "@/providers/useSession";
+import { parseTrack } from "@/utils";
 import Track from "../Track";
-import type { Submission, Track as TrackType } from "../../types";
-import { useSession } from "../../providers/useSession";
-import { parseTrack } from "../../utils";
 
 type EventCardProps = {
   id: string;

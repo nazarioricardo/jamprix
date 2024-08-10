@@ -1,6 +1,6 @@
 import { TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { useSession } from "../../providers/useSession";
+import { useSession } from "@/providers/useSession";
 
 function ProfileButton() {
   const router = useRouter();

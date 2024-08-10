@@ -2,12 +2,12 @@ import { useCallback, useState } from "react";
 import { Text, View, Button } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import { spotifyRequest } from "../../../request";
-import { useSession } from "../../../providers/useSession";
-import { supabase } from "../../../supabase/initSupabase";
-import type { Track as TrackType } from "../../../types";
-import { parseTrack } from "../../../utils";
-import Track from "../../../components/Track";
+import { spotifyRequest } from "@/request";
+import { useSession } from "@/providers/useSession";
+import { supabase } from "@/supabase/initSupabase";
+import type { Track as TrackType } from "@/types";
+import { parseTrack } from "@/utils";
+import Track from "@/components/Track";
 
 const TEST_TRACK =
   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";

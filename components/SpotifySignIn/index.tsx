@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { StyleSheet, Text, Pressable } from "react-native";
 import axios from "axios";
 import { useAuthRequest } from "expo-auth-session";
-import { useSession } from "../../providers/useSession";
+import { useSession } from "@/providers/useSession";
+import { Provider } from "@/providers/SessionProvider";
 import { REDIRECT_URI, SPOTIFY_DISCOVERY, SPOTIFY_SCOPES } from "./constants";
-import { Provider } from "../../providers/SessionProvider";
 
 type SpotifySignInProps = {
   onSuccess: () => void;

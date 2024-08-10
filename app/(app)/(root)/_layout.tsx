@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { Text } from "react-native";
-import { useSession } from "../../../providers/useSession";
-import ProfileButton from "../../../components/ProfileButton";
-import CreateChannelButton from "../../../components/CreateChannelButton";
+import { useSession } from "@/providers/useSession";
+import ProfileButton from "@/components/ProfileButton";
+import CreateChannelButton from "@/components/CreateChannelButton";
 
 export default function RootLayout() {
   const { userId, isLoading, signOut } = useSession();

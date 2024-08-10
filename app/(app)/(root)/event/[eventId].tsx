@@ -1,17 +1,13 @@
+import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
-import type {
-  Profile,
-  Submission,
-  Track as TrackType,
-} from "../../../../types";
-import { supabase } from "../../../../supabase/initSupabase";
-import { useEffect, useState } from "react";
-import { spotifyRequest } from "../../../../request";
-import { useSession } from "../../../../providers/useSession";
 import { Track as SpotifyTrack } from "spotify-types";
-import { parseTrack } from "../../../../utils";
-import Track from "../../../../components/Track";
+import type { Profile, Submission, Track as TrackType } from "@/types";
+import { supabase } from "@/supabase/initSupabase";
+import { spotifyRequest } from "@/request";
+import { useSession } from "@/providers/useSession";
+import { parseTrack } from "@/utils";
+import Track from "@/components/Track";
 
 type EventParams = {
   id: string;

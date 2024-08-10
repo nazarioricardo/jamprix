@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useSession } from "../../../providers/useSession";
-import { supabase } from "../../../supabase/initSupabase";
-import { Channel, Participant } from "../../../types";
+import { useSession } from "@/providers/useSession";
+import { supabase } from "@/supabase/initSupabase";
+import { Channel, Participant } from "@/types";
 
 function Home() {
   const router = useRouter();
