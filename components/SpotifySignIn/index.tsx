@@ -11,6 +11,7 @@ type SpotifySignInProps = {
 };
 
 function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
+  console.log("Redirect URI", REDIRECT_URI);
   const { signIn } = useSession();
 
   const [request, response, promptAsync] = useAuthRequest(
@@ -25,7 +26,7 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
       },
       redirectUri: REDIRECT_URI,
     },
-    SPOTIFY_DISCOVERY
+    SPOTIFY_DISCOVERY,
   );
 
   const onPressSpotifySignIn = () => {
@@ -49,12 +50,12 @@ function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
-          }
+          },
         )
         .then(({ data }) => {
           if (!signIn) {
             throw new Error(
-              "Unable to set token: AuthContext instance not found."
+              "Unable to set token: AuthContext instance not found.",
             );
           }
 
