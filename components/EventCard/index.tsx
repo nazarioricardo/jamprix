@@ -1,12 +1,12 @@
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Card, Text, Button } from "react-native-ui-lib";
+import { Text, Button, View } from "react-native";
+import { useRouter } from "expo-router";
+import axios from "axios";
 import { supabase } from "../../supabase/initSupabase";
 import Track from "../Track";
 import type { Submission, Track as TrackType } from "../../constants";
 import { useSession } from "../../providers/useSession";
 import { parseTrack } from "../../utils";
-import axios from "axios";
 
 type EventCardProps = {
   id: string;
@@ -47,7 +47,7 @@ function EventCard({ id, title, description }: EventCardProps) {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-      }
+      },
     );
 
     setUserTrack(parseTrack(response.data));
@@ -76,7 +76,7 @@ function EventCard({ id, title, description }: EventCardProps) {
 
   useEffect(() => {
     const userSubmission = submissions.find(
-      (submission) => submission.profile === dbUserId
+      (submission) => submission.profile === dbUserId,
     );
 
     if (userSubmission && userSubmission.spotify_id) {
@@ -85,22 +85,22 @@ function EventCard({ id, title, description }: EventCardProps) {
   }, [submissions]);
 
   return (
-    <Card containerStyle={{ padding: 16 }}>
-      <Text text60BO>{title}</Text>
-      <Text text80>{description}</Text>
+    <View style={{ padding: 16 }}>
+      <Text>{title}</Text>
+      <Text>{description}</Text>
 
       {userTrack ? (
         <>
           <Track {...userTrack} />
-          <Button label="Change Your Song" onPress={onPressFindYourSong} />
+          <Button title="Change Your Song" onPress={onPressFindYourSong} />
         </>
       ) : (
-        <Button label="Add Your Song" onPress={onPressFindYourSong} />
+        <Button title="Add Your Song" onPress={onPressFindYourSong} />
       )}
 
       <Text>{submissions.length} total submissions</Text>
-      <Button label="View Event" onPress={onPressViewEvent} />
-    </Card>
+      <Button title="View Event" onPress={onPressViewEvent} />
+    </View>
   );
 }
 

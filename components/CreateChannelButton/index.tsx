@@ -1,6 +1,5 @@
-import { Pressable } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { Text } from "react-native-ui-lib";
 
 function CreateChannelButton() {
   const router = useRouter();
@@ -11,9 +10,9 @@ function CreateChannelButton() {
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => ({
+      style={{
         height: 24,
         width: 24,
         borderRadius: 50,
@@ -22,11 +21,10 @@ function CreateChannelButton() {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        opacity: pressed ? 0.5 : 1,
-      })}
+      }}
     >
       <Text>+</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

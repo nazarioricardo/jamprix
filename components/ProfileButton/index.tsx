@@ -1,6 +1,5 @@
-import { Pressable } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { Text } from "react-native-ui-lib";
 import { useSession } from "../../providers/useSession";
 
 function ProfileButton() {
@@ -13,9 +12,9 @@ function ProfileButton() {
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => ({
+      style={{
         height: 24,
         width: 24,
         borderRadius: 50,
@@ -24,11 +23,10 @@ function ProfileButton() {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        opacity: pressed ? 0.5 : 1,
-      })}
+      }}
     >
       <Text>{email ? email[0].toUpperCase() : "P"}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
