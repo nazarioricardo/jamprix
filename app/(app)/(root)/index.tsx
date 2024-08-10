@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
-import { FlatList } from "react-native";
-import { Card, Text, View } from "react-native-ui-lib";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
@@ -63,14 +62,14 @@ function Home() {
         keyExtractor={(channel) => channel.id}
         renderItem={({ item: channel }) => {
           return (
-            <Card
+            <TouchableOpacity
               onPress={() => onPressChannel(channel)}
-              containerStyle={{ padding: 16 }}
+              style={{ padding: 16 }}
             >
-              <Text text60BO>{channel.title}</Text>
-              <Text text80>{channel.description}</Text>
-              <Text text100L>by {channel.created_by.email}</Text>
-            </Card>
+              <Text>{channel.title}</Text>
+              <Text>{channel.description}</Text>
+              <Text>by {channel.created_by.email}</Text>
+            </TouchableOpacity>
           );
         }}
       />

@@ -1,14 +1,14 @@
-import { FlatList, Text, View } from "react-native";
-import {
-  Participant,
-  type Profile,
-  type Channel,
-  type Event,
-} from "../../../../constants";
 import { useEffect, useState } from "react";
+import { FlatList, Text, View } from "react-native";
+import { Stack, useLocalSearchParams } from "expo-router";
+import type {
+  Participant,
+  Profile,
+  Channel,
+  Event,
+} from "../../../../constants";
 import { supabase } from "../../../../supabase/initSupabase";
 import { useSession } from "../../../../providers/useSession";
-import { Stack, useLocalSearchParams } from "expo-router";
 import EventCard from "../../../../components/EventCard";
 
 type ChannelSearchParams = {
@@ -49,7 +49,7 @@ function Channel() {
             .map((partipant: Participant) => {
               return partipant.profile;
             })
-            .filter(({ user_id }) => user_id === userId)
+            .filter(({ user_id }) => user_id === userId),
         );
       });
 

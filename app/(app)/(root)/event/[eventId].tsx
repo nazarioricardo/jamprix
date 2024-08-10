@@ -1,6 +1,5 @@
-import { FlatList } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { Text, View } from "react-native-ui-lib";
 import type {
   Profile,
   Submission,
@@ -44,7 +43,7 @@ function Event() {
 
       const spotifyIds = data.map((submission) => submission.spotify_id);
       const url = `https://api.spotify.com/v1/tracks?ids=${spotifyIds.join(
-        ","
+        ",",
       )}`;
       const {
         data: { tracks },
@@ -59,7 +58,7 @@ function Event() {
           acc[track.id] = track;
           return acc;
         },
-        {}
+        {},
       );
 
       const combined = data.map((submission) => {

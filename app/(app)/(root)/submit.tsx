@@ -1,10 +1,9 @@
 import { useCallback, useState } from "react";
-import { Text, View } from "react-native-ui-lib";
-import { spotifyRequest } from "../../../request";
-import * as Clipboard from "expo-clipboard";
-import { useSession } from "../../../providers/useSession";
+import { Text, View, Button } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { Button } from "react-native-ui-lib";
+import * as Clipboard from "expo-clipboard";
+import { spotifyRequest } from "../../../request";
+import { useSession } from "../../../providers/useSession";
 import { supabase } from "../../../supabase/initSupabase";
 import type { Track as TrackType } from "../../../constants";
 import { parseTrack } from "../../../utils";
@@ -44,7 +43,7 @@ function Submit() {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
 
       setTrack(parseTrack(response.data));
@@ -63,7 +62,7 @@ function Submit() {
   useFocusEffect(
     useCallback(() => {
       pasteSong();
-    }, [])
+    }, []),
   );
 
   const onPressSubmit = async () => {
@@ -80,7 +79,7 @@ function Submit() {
           profile: dbUserId,
           event: eventId,
         },
-        { onConflict: "event, profile" }
+        { onConflict: "event, profile" },
       );
 
       if (error) {
@@ -99,9 +98,9 @@ function Submit() {
       {isFetching ? <Text>Loading...</Text> : null}
       {isPosting ? <Text>Submitting...</Text> : null}
       {track ? <Track {...track} /> : null}
-      <Button label="Paste Link" onPress={pasteSong} />
-      <Button label="Submit" disabled={!track} onPress={onPressSubmit} />
-      <Button label="Cancel" onPress={() => router.dismiss()} />
+      <Button title="Paste Link" onPress={pasteSong} />
+      <Button title="Submit" disabled={!track} onPress={onPressSubmit} />
+      <Button title="Cancel" onPress={() => router.dismiss()} />
     </View>
   );
 }

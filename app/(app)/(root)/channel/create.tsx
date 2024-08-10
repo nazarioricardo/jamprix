@@ -1,5 +1,5 @@
-import { Formik } from "formik";
 import { Button, StyleSheet, TextInput, View } from "react-native";
+import { Formik } from "formik";
 
 function ChannelCreate() {
   return (

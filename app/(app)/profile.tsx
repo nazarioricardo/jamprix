@@ -1,4 +1,4 @@
-import { Button, View } from "react-native-ui-lib";
+import { Button, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSession } from "../../providers/useSession";
 
@@ -16,7 +16,7 @@ function Profile() {
 
   return (
     <View>
-      <Button label="Sign Out" onPress={onPressSignOut} />
+      <Button title="Sign Out" onPress={onPressSignOut} />
     </View>
   );
 }
