@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { Card } from "tamagui";
+import { Card, View, Text, useTheme } from "tamagui";
 import { useSession } from "@/providers/useSession";
 import { supabase } from "@/supabase/initSupabase";
 import { Channel, Participant } from "@/types";
@@ -12,6 +12,7 @@ function Home() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
+  const theme = useTheme();
   useFocusEffect(
     useCallback(() => {
       if (isFetching) {
@@ -39,10 +40,6 @@ function Home() {
         });
     }, []),
   );
-
-  const onPressCreatePrix = async () => {
-    router.navigate("channel/create");
-  };
 
   const onPressChannel = (channel: Channel) => {
     const { created_by, ...rest } = channel;

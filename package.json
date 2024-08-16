@@ -7,11 +7,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "generate-themes": "tamagui generate-themes ./theme-builder.ts ./theme.ts"
+    "generate-themes": "tamagui generate-themes ./theme-builder.ts ./themes.ts"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-navigation/native": "^6.1.18",
     "@supabase/supabase-js": "^2.43.3",
+    "@tamagui/babel-plugin": "^1.108.3",
     "@tamagui/config": "^1.108.3",
     "axios": "^1.6.8",
     "expo": "~51.0.2",
