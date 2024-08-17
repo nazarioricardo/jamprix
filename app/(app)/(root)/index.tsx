@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "@/providers/useSession";
 import { supabase } from "@/supabase/initSupabase";
 import { Channel, Participant } from "@/types";
+import { Card } from "tamagui";
 
 function Home() {
   const router = useRouter();
@@ -62,14 +63,16 @@ function Home() {
         keyExtractor={(channel) => channel.id}
         renderItem={({ item: channel }) => {
           return (
-            <TouchableOpacity
-              onPress={() => onPressChannel(channel)}
-              style={{ padding: 16 }}
-            >
-              <Text>{channel.title}</Text>
-              <Text>{channel.description}</Text>
-              <Text>by {channel.created_by.email}</Text>
-            </TouchableOpacity>
+            <Card>
+              <TouchableOpacity
+                onPress={() => onPressChannel(channel)}
+                style={{ padding: 16 }}
+              >
+                <Text>{channel.title}</Text>
+                <Text>{channel.description}</Text>
+                <Text>by {channel.created_by.email}</Text>
+              </TouchableOpacity>
+            </Card>
           );
         }}
       />
