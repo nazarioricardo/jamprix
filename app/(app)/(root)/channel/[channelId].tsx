@@ -76,7 +76,7 @@ function Channel() {
           <Paragraph fontSize={"$8"}>{description}</Paragraph>
           <Text textAlign="right">Created by {createdBy}</Text>
         </YStack>
-        <View>
+        <YStack>
           {users.map(({ user_id, email }) => {
             return (
               <View key={user_id}>
@@ -98,7 +98,7 @@ function Channel() {
               );
             }}
           />
-        </View>
+        </YStack>
       </View>
     </>
   );
