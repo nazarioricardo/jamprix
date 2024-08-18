@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { View, Text, Paragraph, YStack } from "tamagui";
 import type { Participant, Profile, Channel, Event } from "@/types";
 import { supabase } from "@/supabase/initSupabase";
 import { useSession } from "@/providers/useSession";
@@ -58,8 +59,6 @@ function Channel() {
           throw error;
         }
 
-        console.log("events", data);
-
         if (!data) {
           setEvents([]);
           return;
@@ -73,8 +72,10 @@ function Channel() {
     <>
       <Stack.Screen options={{ title: title }} />
       <View>
-        <Text>{description}</Text>
-        <Text>Created by {createdBy}</Text>
+        <YStack padding={"$4"} gap={"$2"}>
+          <Paragraph fontSize={"$8"}>{description}</Paragraph>
+          <Text textAlign="right">Created by {createdBy}</Text>
+        </YStack>
         <View>
           {users.map(({ user_id, email }) => {
             return (

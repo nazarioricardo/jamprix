@@ -25,7 +25,6 @@ function Login() {
         onPress={async () => {
           try {
             const themes = await supabase.from("theme").select("name");
-            console.log(themes);
           } catch (error) {
             console.error(error);
           }
