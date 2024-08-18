@@ -1,15 +1,16 @@
 import { useCallback, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
+import { View, Card, Text } from "tamagui";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "@/providers/useSession";
+import { Channel, ListView } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
-import { Channel, Participant } from "@/types";
-import { Card } from "tamagui";
+import { Channel as ChannelType, Participant } from "@/types";
 
 function Home() {
   const router = useRouter();
   const { dbUserId } = useSession();
-  const [channels, setChannels] = useState<Channel[]>([]);
+  const [channels, setChannels] = useState<ChannelType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
   useFocusEffect(
@@ -44,7 +45,7 @@ function Home() {
     router.navigate("channel/create");
   };
 
-  const onPressChannel = (channel: Channel) => {
+  const onPressChannel = (channel: ChannelType) => {
     const { created_by, ...rest } = channel;
     router.navigate({
       pathname: `channel/[id]`,
@@ -60,19 +61,13 @@ function Home() {
     <View>
       <FlatList
         data={channels}
+        style={{ padding: 24, height: "100%" }}
         keyExtractor={(channel) => channel.id}
         renderItem={({ item: channel }) => {
           return (
-            <Card>
-              <TouchableOpacity
-                onPress={() => onPressChannel(channel)}
-                style={{ padding: 16 }}
-              >
-                <Text>{channel.title}</Text>
-                <Text>{channel.description}</Text>
-                <Text>by {channel.created_by.email}</Text>
-              </TouchableOpacity>
-            </Card>
+            <TouchableOpacity onPress={() => onPressChannel(channel)}>
+              <Channel.Card {...channel} />
+            </TouchableOpacity>
           );
         }}
       />
