@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
-import { View, Card, Text } from "tamagui";
+import { View } from "tamagui";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useSession } from "@/providers/useSession";
-import { Channel, ListView } from "@/components";
+import { Channel } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
 import { Channel as ChannelType, Participant } from "@/types";
 
@@ -61,7 +61,7 @@ function Home() {
     <View>
       <FlatList
         data={channels}
-        style={{ padding: 24, height: "100%" }}
+        style={{ padding: 24, height: "100%", overflow: "visible" }}
         keyExtractor={(channel) => channel.id}
         renderItem={({ item: channel }) => {
           return (

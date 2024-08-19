@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View, Text, Paragraph, YStack } from "tamagui";
-import type { Participant, Profile, Channel, Event } from "@/types";
+import type {
+  Participant,
+  Profile,
+  Channel,
+  Event as EventType,
+} from "@/types";
 import { supabase } from "@/supabase/initSupabase";
 import { useSession } from "@/providers/useSession";
-import EventCard from "@/components/EventCard";
+import { Event } from "@/components";
 
 type ChannelSearchParams = {
   channelId: string;
@@ -18,7 +23,7 @@ function Channel() {
     useLocalSearchParams<ChannelSearchParams>();
   const { userId, email } = useSession();
   const [users, setUsers] = useState<Profile[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventType[]>([]);
 
   useEffect(() => {
     if (!channelId || !userId) {
@@ -87,15 +92,9 @@ function Channel() {
           <FlatList
             data={events}
             keyExtractor={(event) => event.id}
+            style={{ padding: 24, height: "100%", overflow: "visible" }}
             renderItem={({ item: { id, theme } }) => {
-              return (
-                <EventCard
-                  key={id}
-                  id={id}
-                  title={theme.title}
-                  description={theme.description}
-                />
-              );
+              return <Event.Card key={id} id={id} theme={theme} />;
             }}
           />
         </YStack>

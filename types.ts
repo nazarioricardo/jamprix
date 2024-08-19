@@ -27,7 +27,7 @@ export type Theme = {
 export type Event = {
   id: string;
   theme: Theme;
-  channel: Channel;
+  submissions?: Submission[];
 };
 
 export type Submission = {
