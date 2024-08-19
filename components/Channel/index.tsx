@@ -1,5 +1,5 @@
-import Info from "./Info";
-import Card from "./Card";
+import Info from "./ChannelInfo";
+import Card from "./ChannelCard";
 
 const Channel = {
   Info,
