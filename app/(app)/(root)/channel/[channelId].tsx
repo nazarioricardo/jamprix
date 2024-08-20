@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { View, Text, Paragraph, YStack } from "tamagui";
+import { View } from "tamagui";
 import type {
   Participant,
   Profile,
@@ -19,7 +19,7 @@ type ChannelSearchParams = {
 } & Omit<Channel, "created_by">;
 
 function Channel() {
-  const { channelId, title, description, createdBy } =
+  const { channelId, title, description } =
     useLocalSearchParams<ChannelSearchParams>();
   const { userId, email } = useSession();
   const [users, setUsers] = useState<Profile[]>([]);
@@ -77,27 +77,14 @@ function Channel() {
     <>
       <Stack.Screen options={{ title: title }} />
       <View>
-        <YStack padding={"$4"} gap={"$2"}>
-          <Paragraph fontSize={"$8"}>{description}</Paragraph>
-          <Text textAlign="right">Created by {createdBy}</Text>
-        </YStack>
-        <YStack>
-          {users.map(({ user_id, email }) => {
-            return (
-              <View key={user_id}>
-                <Text>{email}</Text>
-              </View>
-            );
-          })}
-          <FlatList
-            data={events}
-            keyExtractor={(event) => event.id}
-            style={{ padding: 24, height: "100%", overflow: "visible" }}
-            renderItem={({ item: { id, theme } }) => {
-              return <Event.Card key={id} id={id} theme={theme} />;
-            }}
-          />
-        </YStack>
+        <FlatList
+          data={events}
+          keyExtractor={(event) => event.id}
+          style={{ padding: 24, height: "100%", overflow: "visible" }}
+          renderItem={({ item: { id, theme } }) => {
+            return <Event.Card key={id} id={id} theme={theme} />;
+          }}
+        />
       </View>
     </>
   );

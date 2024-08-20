@@ -1,4 +1,4 @@
-import { Text } from "tamagui";
+import { H2, Paragraph, Text, YStack } from "tamagui";
 import type { Event } from "@/types";
 
 type EvenInfoProps = Event;
@@ -8,11 +8,11 @@ function EventInfo({
   submissions,
 }: EvenInfoProps) {
   return (
-    <>
-      <Text>{title}</Text>
-      <Text>{description}</Text>
+    <YStack gap="$4">
+      <H2>{title}</H2>
+      <Paragraph fontSize={"$6"}>{description}</Paragraph>
       {submissions && <Text>{submissions.length} total submissions</Text>}
-    </>
+    </YStack>
   );
 }
 

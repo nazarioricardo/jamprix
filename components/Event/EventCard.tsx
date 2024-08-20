@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button } from "react-native";
 import { useRouter } from "expo-router";
 import axios from "axios";
-import { Card } from "tamagui";
+import { Card, Button, YStack } from "tamagui";
 import { supabase } from "@/supabase/initSupabase";
 import type { Submission, Event, Track as TrackType } from "@/types";
 import { useSession } from "@/providers/useSession";
@@ -87,16 +86,18 @@ function EventCard({ id, theme }: Event) {
         <EventInfo id={id} theme={theme} submissions={submissions} />
       </Card.Header>
 
-      <Button title="View Event" onPress={onPressViewEvent} />
+      <YStack gap="$4">
+        <Button onPress={onPressViewEvent}>View Event</Button>
 
-      {userTrack ? (
-        <>
-          <Track {...userTrack} />
-          <Button title="Change Your Song" onPress={onPressFindYourSong} />
-        </>
-      ) : (
-        <Button title="Add Your Song" onPress={onPressFindYourSong} />
-      )}
+        {userTrack ? (
+          <>
+            <Track {...userTrack} />
+            <Button onPress={onPressFindYourSong}>Change Your Song</Button>
+          </>
+        ) : (
+          <Button onPress={onPressFindYourSong}>Add Your Song</Button>
+        )}
+      </YStack>
     </Card>
   );
 }
