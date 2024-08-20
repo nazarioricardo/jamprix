@@ -91,7 +91,7 @@ function EventCard({ id, title, description }: EventCardProps) {
 
       {userTrack ? (
         <>
-          <Track {...userTrack} />
+          <Track.Select {...userTrack} />
           <Button title="Change Your Song" onPress={onPressFindYourSong} />
         </>
       ) : (

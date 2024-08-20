@@ -88,7 +88,7 @@ function Event() {
           data={submissions}
           keyExtractor={(submission) => submission.profile.user_id}
           renderItem={({ item: { profile, track } }) => {
-            return <Track {...track} user={profile.email} />;
+            return <Track.Info {...track} user={profile.email} />;
           }}
         />
       </View>

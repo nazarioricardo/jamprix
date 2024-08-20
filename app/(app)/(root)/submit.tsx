@@ -97,7 +97,7 @@ function Submit() {
     <View>
       {isFetching ? <Text>Loading...</Text> : null}
       {isPosting ? <Text>Submitting...</Text> : null}
-      {track ? <Track {...track} /> : null}
+      {track ? <Track.Select {...track} /> : null}
       <Button title="Paste Link" onPress={pasteSong} />
       <Button title="Submit" disabled={!track} onPress={onPressSubmit} />
       <Button title="Cancel" onPress={() => router.dismiss()} />

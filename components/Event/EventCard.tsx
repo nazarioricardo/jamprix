@@ -6,7 +6,7 @@ import { supabase } from "@/supabase/initSupabase";
 import type { Submission, Event, Track as TrackType } from "@/types";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
-import Track from "../Track";
+import Track from "../Track/index";
 import EventInfo from "./EventInfo";
 
 function EventCard({ id, theme }: Event) {
@@ -91,7 +91,7 @@ function EventCard({ id, theme }: Event) {
 
         {userTrack ? (
           <>
-            <Track {...userTrack} />
+            <Track.Select {...userTrack} />
             <Button onPress={onPressFindYourSong}>Change Your Song</Button>
           </>
         ) : (
