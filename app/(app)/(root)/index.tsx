@@ -41,10 +41,6 @@ function Home() {
     }, []),
   );
 
-  const onPressCreatePrix = async () => {
-    router.navigate("channel/create");
-  };
-
   const onPressChannel = (channel: ChannelType) => {
     const { created_by, ...rest } = channel;
     router.navigate({
