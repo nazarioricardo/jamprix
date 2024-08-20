@@ -7,7 +7,7 @@ import { supabase } from "@/supabase/initSupabase";
 import { spotifyRequest } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
-import Track from "@/components/Track";
+import { Track } from "@/components";
 
 type EventParams = {
   id: string;
