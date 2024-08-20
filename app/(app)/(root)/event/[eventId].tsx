@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Track as SpotifyTrack } from "spotify-types";
 import type { Profile, Submission, Track as TrackType } from "@/types";
@@ -8,6 +8,7 @@ import { spotifyRequest } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import { Track } from "@/components";
+import { Card, Paragraph } from "tamagui";
 
 type EventParams = {
   id: string;
@@ -78,17 +79,16 @@ function Event() {
     <>
       <Stack.Screen options={{ title: title }} />
       <View>
-        <Text>{description}</Text>
+        <Card padded elevate>
+          <Card.Header>
+            <Paragraph fontSize={"$6"}>{description}</Paragraph>
+          </Card.Header>
+        </Card>
         <FlatList
           data={submissions}
           keyExtractor={(submission) => submission.profile.user_id}
           renderItem={({ item: { profile, track } }) => {
-            return (
-              <View>
-                <Text>{profile.email}</Text>
-                <Track {...track} />
-              </View>
-            );
+            return <Track {...track} user={profile.email} />;
           }}
         />
       </View>
