@@ -88,15 +88,7 @@ function EventCard({ id, theme }: Event) {
 
       <YStack gap="$4">
         <Button onPress={onPressViewEvent}>View Event</Button>
-
-        {userTrack ? (
-          <>
-            <Track.Select {...userTrack} />
-            <Button onPress={onPressFindYourSong}>Change Your Song</Button>
-          </>
-        ) : (
-          <Button onPress={onPressFindYourSong}>Add Your Song</Button>
-        )}
+        <Track.Select track={userTrack} eventId={id} />
       </YStack>
     </Card>
   );
