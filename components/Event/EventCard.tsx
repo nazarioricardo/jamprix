@@ -14,15 +14,9 @@ function EventCard({ id, theme }: Event) {
   const router = useRouter();
   const { dbUserId, access_token } = useSession();
 
+  const [isFetching, setIsFetching] = useState(true);
   const [userTrack, setUserTrack] = useState<TrackType | undefined>();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-
-  const onPressFindYourSong = () => {
-    router.navigate({
-      pathname: "submit",
-      params: { eventId: id },
-    });
-  };
 
   const onPressViewEvent = () => {
     router.push({
@@ -37,6 +31,7 @@ function EventCard({ id, theme }: Event) {
   };
 
   const fetchUserSubmission = async (spotifyId: string) => {
+    setIsFetching(true);
     const response = await axios.get(
       `https://api.spotify.com/v1/tracks/${spotifyId}`,
       {
@@ -47,6 +42,7 @@ function EventCard({ id, theme }: Event) {
     );
 
     setUserTrack(parseTrack(response.data));
+    setIsFetching(false);
   };
 
   const fetchSubmissions = async () => {
@@ -88,7 +84,7 @@ function EventCard({ id, theme }: Event) {
 
       <YStack gap="$4">
         <Button onPress={onPressViewEvent}>View Event</Button>
-        <Track.Select track={userTrack} eventId={id} />
+        <Track.Select track={userTrack} eventId={id} isFetching={isFetching} />
       </YStack>
     </Card>
   );

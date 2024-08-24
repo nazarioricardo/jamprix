@@ -1,12 +1,12 @@
 import { TouchableOpacity } from "react-native";
-import { Card, useTheme, Text } from "tamagui";
+import { Card, useTheme, Text, Spinner, View } from "tamagui";
 import { type Track } from "@/types";
 import TrackInfo from "./TrackInfo";
 import { useRouter } from "expo-router";
 
-type TrackSelectProps = { track?: Track; eventId: string };
+type TrackSelectProps = { track?: Track; eventId: string; isFetching: boolean };
 
-function TrackSelect({ track, eventId }: TrackSelectProps) {
+function TrackSelect({ track, eventId, isFetching }: TrackSelectProps) {
   const router = useRouter();
   const theme = useTheme();
 
@@ -18,18 +18,28 @@ function TrackSelect({ track, eventId }: TrackSelectProps) {
   };
 
   return (
-    <Card backgroundColor={theme.color4} onPress={() => console.log("pressed")}>
-      <TouchableOpacity onPress={onPress}>
-        {track ? (
+    <Card backgroundColor={theme.color4} style={{ height: 100, width: "100%" }}>
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={onPress}
+      >
+        {isFetching && <Spinner />}
+
+        {!isFetching && track && (
           <TrackInfo
             name={track.name}
             artist={track.artist}
             image={track.image}
             album={track.album}
           />
-        ) : (
-          <Text>Add A Track</Text>
         )}
+
+        {!isFetching && !track && <Text>+ Add A Track</Text>}
       </TouchableOpacity>
     </Card>
   );
