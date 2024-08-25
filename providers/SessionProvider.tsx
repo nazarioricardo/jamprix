@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { spotifyRequest } from "../request";
 import { useStorageState } from "./useStorageState";
 import { supabase } from "../supabase/initSupabase";
+import { jwtDecode } from "jwt-decode";
 
 export enum Provider {
   APPLE = "apple",
@@ -11,9 +12,25 @@ export enum Provider {
 
 type AuthData = {
   access_token: string | null;
-  refresh_token: string | null;
-  expires_in: number;
+  refresh_token?: string | null;
+  expires_in?: number;
+  user_token?: string;
+  identity_token?: string;
   provider: Provider | null;
+};
+
+type AppleAuth = {
+  aud: string;
+  auth_time: number;
+  c_hash: string;
+  email: string;
+  email_verified: boolean;
+  exp: number;
+  iat: number;
+  is_private_email: boolean;
+  iss: string;
+  nonce_supported: boolean;
+  sub: string;
 };
 
 export type Session = AuthData & {
@@ -54,29 +71,7 @@ function SessionProvider(props: SessionProviderProps) {
     setExpiration(expirationTime + "");
   };
 
-  const signIn = async ({
-    access_token,
-    refresh_token,
-    expires_in,
-    provider: session_provider,
-  }: AuthData) => {
-    let musicData;
-    try {
-      const { data } = await spotifyRequest.get(
-        "https://api.spotify.com/v1/me",
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-
-      musicData = data;
-    } catch (error) {
-      console.error("Error Signing In:", error);
-      throw error;
-    }
-
+  const signInToSupabase = async (musicData: { email: string; id: string }) => {
     const dbCredentials = {
       email: musicData.email,
       password: `${musicData.id}:${process.env.EXPO_PUBLIC_SUPABASE_PW}`,
@@ -87,9 +82,8 @@ function SessionProvider(props: SessionProviderProps) {
       const { data, error } = await supabase.auth.signUp(dbCredentials);
 
       if (error && error.message === "User already registered") {
-        const { data, error } = await supabase.auth.signInWithPassword(
-          dbCredentials
-        );
+        const { data, error } =
+          await supabase.auth.signInWithPassword(dbCredentials);
 
         if (error) {
           throw error;
@@ -109,13 +103,94 @@ function SessionProvider(props: SessionProviderProps) {
       throw new Error("Db user not found");
     }
 
+    return supabaseUser;
+  };
+
+  const signInWithSpotify = async ({
+    access_token,
+    refresh_token,
+    expires_in,
+  }: AuthData) => {
+    if (!refresh_token || !expires_in) {
+      throw new Error("Authentication Failed: Missing Data");
+    }
+
+    let musicData;
+    try {
+      const { data } = await spotifyRequest.get(
+        "https://api.spotify.com/v1/me",
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        },
+      );
+
+      musicData = data;
+    } catch (error) {
+      console.error("Error Signing In:", error);
+      throw error;
+    }
+
+    const supabaseUser = await signInToSupabase(musicData);
+
     setEmail(musicData.email);
     setUserId(musicData.id);
     setDbUserId(supabaseUser.id);
     setAccessToken(access_token);
     setRefreshToken(refresh_token);
-    setProvider(session_provider);
     setValidExpiration(expires_in);
+    setProvider(Provider.SPOTIFY);
+  };
+
+  const signInWithApple = async ({
+    access_token,
+    user_token,
+    identity_token,
+  }: AuthData) => {
+    if (!user_token || !identity_token) {
+      throw new Error("Authentication Failed: Missing Data");
+    }
+
+    const { exp, email } = jwtDecode(identity_token) as AppleAuth;
+
+    signInToSupabase({ email, id: user_token });
+
+    setAccessToken(access_token);
+    setUserId(user_token);
+    setExpiration(String(exp));
+    setProvider(Provider.APPLE);
+  };
+
+  const signIn = async ({
+    access_token,
+    refresh_token,
+    expires_in,
+    user_token,
+    identity_token,
+    provider: session_provider,
+  }: AuthData) => {
+    try {
+      if (session_provider === Provider.SPOTIFY) {
+        signInWithSpotify({
+          access_token,
+          refresh_token,
+          expires_in,
+          provider: session_provider,
+        });
+      }
+
+      if (session_provider === Provider.APPLE) {
+        signInWithApple({
+          access_token,
+          user_token,
+          identity_token,
+          provider: session_provider,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const signOut = () => {
@@ -154,7 +229,7 @@ function SessionProvider(props: SessionProviderProps) {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
-          }
+          },
         );
 
         await supabase.auth.refreshSession();

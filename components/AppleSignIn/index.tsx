@@ -7,23 +7,39 @@ import {
   signInAsync,
 } from "expo-apple-authentication";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useSession } from "@/providers/useSession";
+import { Provider } from "@/providers/SessionProvider";
 
 const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn() {
+  const { signIn } = useSession();
+
   const onPressAppleSignIn = async () => {
-    console.log("pressed apple sign in");
-    let credentials;
     try {
-      credentials = await signInAsync({
-        requestedScopes: [
-          AppleAuthenticationScope.FULL_NAME,
-          AppleAuthenticationScope.EMAIL,
-        ],
+      const credentials = await signInAsync({
+        requestedScopes: [AppleAuthenticationScope.EMAIL],
       });
 
-      fetchApplePlaylists(credentials.identityToken);
+      const { authorizationCode, identityToken, user } = credentials;
+
+      if (!authorizationCode || !identityToken) {
+        throw new Error("Authorization failed");
+      }
+
+      // const developerToken = await fetchAppleDeveloperToken();
+
+      if (signIn) {
+        signIn({
+          access_token: authorizationCode,
+          user_token: user,
+          identity_token: identityToken,
+          provider: Provider.APPLE,
+        });
+      }
     } catch (error) {
+      console.error(error);
       // if (error instanceof Error) {
       //   if (error.code === "ERR_REQUEST_CANCELED") {
       //     // handle that the user canceled the sign-in flow
