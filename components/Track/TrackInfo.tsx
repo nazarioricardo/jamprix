@@ -5,7 +5,7 @@ type TrackProps = Omit<Track, "id" | "href" | "preview_url" | "uri"> & {
   user?: string;
 };
 
-function TrackInfo({ name, artist, image, album, user }: TrackProps) {
+function TrackInfo({ name, artist, image, album }: TrackProps) {
   return (
     <XStack gap={"$2.5"}>
       <Image
@@ -13,11 +13,6 @@ function TrackInfo({ name, artist, image, album, user }: TrackProps) {
         source={{ uri: image }}
       />
       <YStack flex={1} gap={"$2"} justifyContent="center">
-        {user && (
-          <Text flexWrap="wrap" fontSize={"$5"} fontWeight={"bold"}>
-            {user}
-          </Text>
-        )}
         <Text flexWrap="wrap" fontSize={"$4"} fontWeight={"bold"}>
           {name}
         </Text>

@@ -83,8 +83,8 @@ function EventCard({ id, theme }: Event) {
       </Card.Header>
 
       <YStack gap="$4">
-        <Button onPress={onPressViewEvent}>View Event</Button>
         <Track.Select track={userTrack} eventId={id} isFetching={isFetching} />
+        <Button onPress={onPressViewEvent}>View Event</Button>
       </YStack>
     </Card>
   );

@@ -87,8 +87,8 @@ function Event() {
         <FlatList
           data={submissions}
           keyExtractor={(submission) => submission.profile.user_id}
-          renderItem={({ item: { profile, track } }) => {
-            return <Track.Info {...track} user={profile.email} />;
+          renderItem={({ item: { track } }) => {
+            return <Track.Info {...track} />;
           }}
         />
       </View>
