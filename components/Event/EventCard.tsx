@@ -25,6 +25,7 @@ function EventCard({ id, theme }: Event) {
         id,
         title,
         description,
+        userTrack: JSON.stringify(userTrack),
         submissions: JSON.stringify(submissions),
       },
     });

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
+import { Card, Paragraph } from "tamagui";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Track as SpotifyTrack } from "spotify-types";
 import type { Profile, Submission, Track as TrackType } from "@/types";
@@ -8,12 +9,13 @@ import { spotifyRequest } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import { Track } from "@/components";
-import { Card, Paragraph } from "tamagui";
 
 type EventParams = {
   id: string;
   title: string;
   description: string;
+  submissions: string;
+  userTrack: string;
 };
 
 type SubmissionListItem = Submission & {
@@ -22,8 +24,9 @@ type SubmissionListItem = Submission & {
 };
 
 function Event() {
-  const { access_token } = useSession();
-  const { id, title, description } = useLocalSearchParams<EventParams>();
+  const { access_token, dbUserId } = useSession();
+  const { id, title, description, userTrack } =
+    useLocalSearchParams<EventParams>();
 
   const [submissions, setSubmissions] = useState<SubmissionListItem[]>([]);
 
@@ -38,7 +41,17 @@ function Event() {
         throw error;
       }
 
-      const spotifyIds = data.map((submission) => submission.spotify_id);
+      const spotifyIds = data
+        .filter((submission) => submission.profile.user_id !== dbUserId)
+        .map((submission) => {
+          console.log(submission.profile.user_id === dbUserId);
+          return submission.spotify_id;
+        });
+
+      if (spotifyIds.length === 0) {
+        return;
+      }
+
       const url = `https://api.spotify.com/v1/tracks?ids=${spotifyIds.join(
         ",",
       )}`;
@@ -58,12 +71,18 @@ function Event() {
         {},
       );
 
-      const combined = data.map((submission) => {
-        return {
-          ...submission,
-          track: parseTrack(trackMap[submission.spotify_id]),
-        };
-      });
+      const combined = data
+        .map((submission) => {
+          if (!submission.spotify_id) {
+            return;
+          }
+
+          return {
+            ...submission,
+            track: parseTrack(trackMap[submission.spotify_id]),
+          };
+        })
+        .filter((submission) => submission !== null);
 
       setSubmissions(combined);
     } catch (error) {
@@ -75,6 +94,12 @@ function Event() {
     fetchSubmissions();
   }, []);
 
+  let userSubmissionTrack: TrackType | undefined;
+  if (userTrack) {
+    const parsedTrack = JSON.parse(userTrack) as TrackType;
+    userSubmissionTrack = parsedTrack;
+  }
+
   return (
     <>
       <Stack.Screen options={{ title: title }} />
@@ -84,6 +109,11 @@ function Event() {
             <Paragraph fontSize={"$6"}>{description}</Paragraph>
           </Card.Header>
         </Card>
+        <Track.Select
+          eventId={id!}
+          track={userSubmissionTrack}
+          isFetching={false}
+        />
         <FlatList
           data={submissions}
           keyExtractor={(submission) => submission.profile.user_id}
