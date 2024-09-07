@@ -103,8 +103,6 @@ function Submit() {
     router.dismiss();
   };
 
-  console.log(parsedCurrentTrack);
-
   return (
     <View>
       {isFetching ? <Text>Loading...</Text> : null}
