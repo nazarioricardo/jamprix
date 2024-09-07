@@ -169,13 +169,14 @@ function SessionProvider(props: SessionProviderProps) {
     console.log("has user_token identity_token");
 
     try {
-      const { exp, email } = jwtDecode(identity_token) as AppleAuth;
+      const decodedToken = jwtDecode(identity_token) as AppleAuth;
+      const { exp } = decodedToken;
+      const email = "nazarioricardo+1@gmail.com";
       await signInToSupabase({
-        email: "nazarioricardo+1@gmail.com",
+        email,
         id: user_token,
       });
 
-      console.log("has exp email");
       setAccessToken(access_token);
       setUserId(user_token);
       setExpiration(String(exp));
