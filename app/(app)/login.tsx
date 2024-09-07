@@ -1,8 +1,7 @@
 import { StyleSheet, View, Button } from "react-native";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import SpotifySignIn from "@/components/SpotifySignIn";
-import AppleSignIn from "@/components/AppleSignIn";
+import { SpotifySignIn, AppleSignIn } from "@/components/SignIn";
 import { supabase } from "@/supabase/initSupabase";
 
 function Login() {

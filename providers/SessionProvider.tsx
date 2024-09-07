@@ -148,18 +148,25 @@ function SessionProvider(props: SessionProviderProps) {
     user_token,
     identity_token,
   }: AuthData) => {
+    console.log("signInWithApple");
     if (!user_token || !identity_token) {
       throw new Error("Authentication Failed: Missing Data");
     }
 
-    const { exp, email } = jwtDecode(identity_token) as AppleAuth;
+    console.log("has user_token identity_token");
 
-    signInToSupabase({ email, id: user_token });
+    try {
+      const { exp, email } = jwtDecode(identity_token) as AppleAuth;
+      signInToSupabase({ email, id: user_token });
 
-    setAccessToken(access_token);
-    setUserId(user_token);
-    setExpiration(String(exp));
-    setProvider(Provider.APPLE);
+      console.log("has exp email");
+      setAccessToken(access_token);
+      setUserId(user_token);
+      setExpiration(String(exp));
+      setProvider(Provider.APPLE);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const signIn = async ({
@@ -170,6 +177,7 @@ function SessionProvider(props: SessionProviderProps) {
     identity_token,
     provider: session_provider,
   }: AuthData) => {
+    console.log("session_provider", session_provider);
     try {
       if (session_provider === Provider.SPOTIFY) {
         signInWithSpotify({
@@ -181,6 +189,7 @@ function SessionProvider(props: SessionProviderProps) {
       }
 
       if (session_provider === Provider.APPLE) {
+        console.log("will signInWithApple");
         signInWithApple({
           access_token,
           user_token,

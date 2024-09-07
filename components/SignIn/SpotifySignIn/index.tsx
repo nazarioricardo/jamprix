@@ -5,12 +5,9 @@ import { useAuthRequest } from "expo-auth-session";
 import { useSession } from "@/providers/useSession";
 import { Provider } from "@/providers/SessionProvider";
 import { REDIRECT_URI, SPOTIFY_DISCOVERY, SPOTIFY_SCOPES } from "./constants";
+import { SignInProps } from "../types";
 
-type SpotifySignInProps = {
-  onSuccess: () => void;
-};
-
-function SpotifySignIn({ onSuccess }: SpotifySignInProps) {
+function SpotifySignIn({ onSuccess }: SignInProps) {
   console.log("Redirect URI", REDIRECT_URI);
   const { signIn } = useSession();
 

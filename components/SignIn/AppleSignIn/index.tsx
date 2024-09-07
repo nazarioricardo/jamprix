@@ -7,13 +7,13 @@ import {
   signInAsync,
 } from "expo-apple-authentication";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useSession } from "@/providers/useSession";
 import { Provider } from "@/providers/SessionProvider";
+import { SignInProps } from "../types";
 
 const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
-function AppleSignIn() {
+function AppleSignIn({ onSuccess }: SignInProps) {
   const { signIn } = useSession();
 
   const onPressAppleSignIn = async () => {
