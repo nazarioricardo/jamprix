@@ -12,14 +12,24 @@ import Track from "@/components/Track";
 const TEST_TRACK =
   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
 
+type SubmitParams = {
+  eventId: string;
+  currentTrack?: string;
+};
+
 function Submit() {
   const { access_token, dbUserId } = useSession();
-  const { eventId } = useLocalSearchParams<{ eventId: string }>();
+  const { eventId, currentTrack } = useLocalSearchParams<SubmitParams>();
+
+  const parsedCurrentTrack: TrackType = currentTrack
+    ? JSON.parse(currentTrack)
+    : null;
+
   const router = useRouter();
 
   const [isFetching, setIsFetching] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
-  const [track, setTrack] = useState<TrackType | null>(null);
+  const [track, setTrack] = useState<TrackType | null>(parsedCurrentTrack);
 
   const fetchTrack = async (uri: string) => {
     if (uri === "") {
@@ -93,11 +103,13 @@ function Submit() {
     router.dismiss();
   };
 
+  console.log(parsedCurrentTrack);
+
   return (
     <View>
       {isFetching ? <Text>Loading...</Text> : null}
       {isPosting ? <Text>Submitting...</Text> : null}
-      {track ? <Track.Select {...track} /> : null}
+      {track && <Track.Info {...track} />}
       <Button title="Paste Link" onPress={pasteSong} />
       <Button title="Submit" disabled={!track} onPress={onPressSubmit} />
       <Button title="Cancel" onPress={() => router.dismiss()} />

@@ -13,7 +13,7 @@ function TrackSelect({ track, eventId, isFetching }: TrackSelectProps) {
   const onPress = () => {
     router.navigate({
       pathname: "submit",
-      params: { eventId },
+      params: { eventId, currentTrack: JSON.stringify(track) },
     });
   };
 
