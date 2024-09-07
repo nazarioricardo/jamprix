@@ -13,12 +13,15 @@ function Login() {
     }
   };
 
+  const onError = (error: Error) => {
+    console.error(error);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <AppleSignIn />
-      <SpotifySignIn onSuccess={onSuccess} />
-      {/* <Pressable> */}
+      <AppleSignIn onSuccess={onSuccess} onError={onError} />
+      <SpotifySignIn onSuccess={onSuccess} onError={onError} />
       <Button
         title="Supabase Test"
         onPress={async () => {

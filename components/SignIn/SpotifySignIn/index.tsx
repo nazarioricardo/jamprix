@@ -7,7 +7,7 @@ import { Provider } from "@/providers/SessionProvider";
 import { REDIRECT_URI, SPOTIFY_DISCOVERY, SPOTIFY_SCOPES } from "./constants";
 import { SignInProps } from "../types";
 
-function SpotifySignIn({ onSuccess }: SignInProps) {
+function SpotifySignIn({ onSuccess, onError }: SignInProps) {
   console.log("Redirect URI", REDIRECT_URI);
   const { signIn } = useSession();
 
@@ -62,7 +62,7 @@ function SpotifySignIn({ onSuccess }: SignInProps) {
           onSuccess();
         })
         .catch((error) => {
-          console.error(error);
+          onError(error as Error);
         });
     }
   }, [response]);

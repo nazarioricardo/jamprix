@@ -40,7 +40,7 @@ export type Session = AuthData & {
 type SessionContextProps = {
   email: string | null;
   dbUserId: string | null;
-  signIn: (data: AuthData) => void;
+  signIn: (data: AuthData) => Promise<void>;
   signOut: () => void;
   isLoading: boolean;
 } & Session;
@@ -50,6 +50,9 @@ const SessionContext = createContext<Partial<SessionContextProps>>({});
 type SessionProviderProps = {
   children: React.ReactNode;
 };
+
+const USER_EXISTS_MSG = "User already registered";
+const MAX_PASSWORD_LENGTH = 72;
 
 function SessionProvider(props: SessionProviderProps) {
   const [[isLoadingEmail, email], setEmail] = useStorageState("email");
@@ -74,24 +77,34 @@ function SessionProvider(props: SessionProviderProps) {
   const signInToSupabase = async (musicData: { email: string; id: string }) => {
     const dbCredentials = {
       email: musicData.email,
-      password: `${musicData.id}:${process.env.EXPO_PUBLIC_SUPABASE_PW}`,
+      password: `${musicData.id}:${process.env.EXPO_PUBLIC_SUPABASE_PW}`.slice(
+        0,
+        MAX_PASSWORD_LENGTH,
+      ),
     };
 
     let supabaseUser;
     try {
-      const { data, error } = await supabase.auth.signUp(dbCredentials);
+      const { data, error: signUpError } =
+        await supabase.auth.signUp(dbCredentials);
 
-      if (error && error.message === "User already registered") {
-        const { data, error } =
+      const userExists = signUpError && signUpError.message === USER_EXISTS_MSG;
+
+      if (signUpError && !userExists) {
+        throw new Error(signUpError.message);
+      }
+
+      if (signUpError && signUpError.message === USER_EXISTS_MSG) {
+        const { data, error: signInError } =
           await supabase.auth.signInWithPassword(dbCredentials);
 
-        if (error) {
-          throw error;
+        if (signInError) {
+          throw new Error(signInError.message);
         }
 
         supabaseUser = data.user;
-      } else if (error) {
-        throw error;
+      } else if (signUpError) {
+        throw new Error(signUpError.message);
       } else {
         supabaseUser = data.user;
       }
@@ -157,7 +170,10 @@ function SessionProvider(props: SessionProviderProps) {
 
     try {
       const { exp, email } = jwtDecode(identity_token) as AppleAuth;
-      signInToSupabase({ email, id: user_token });
+      await signInToSupabase({
+        email: "nazarioricardo+1@gmail.com",
+        id: user_token,
+      });
 
       console.log("has exp email");
       setAccessToken(access_token);
@@ -180,7 +196,7 @@ function SessionProvider(props: SessionProviderProps) {
     console.log("session_provider", session_provider);
     try {
       if (session_provider === Provider.SPOTIFY) {
-        signInWithSpotify({
+        await signInWithSpotify({
           access_token,
           refresh_token,
           expires_in,
@@ -190,7 +206,7 @@ function SessionProvider(props: SessionProviderProps) {
 
       if (session_provider === Provider.APPLE) {
         console.log("will signInWithApple");
-        signInWithApple({
+        await signInWithApple({
           access_token,
           user_token,
           identity_token,
@@ -198,7 +214,7 @@ function SessionProvider(props: SessionProviderProps) {
         });
       }
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   };
 

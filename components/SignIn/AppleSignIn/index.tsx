@@ -13,7 +13,7 @@ import { SignInProps } from "../types";
 
 const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
-function AppleSignIn({ onSuccess }: SignInProps) {
+function AppleSignIn({ onSuccess, onError }: SignInProps) {
   const { signIn } = useSession();
 
   const onPressAppleSignIn = async () => {
@@ -31,20 +31,19 @@ function AppleSignIn({ onSuccess }: SignInProps) {
       // const developerToken = await fetchAppleDeveloperToken();
 
       if (signIn) {
-        signIn({
+        await signIn({
           access_token: authorizationCode,
           user_token: user,
           identity_token: identityToken,
           provider: Provider.APPLE,
         });
+      } else {
+        throw new Error("signIn undefined");
       }
+
+      onSuccess();
     } catch (error) {
-      console.error(error);
-      // if (error instanceof Error) {
-      //   if (error.code === "ERR_REQUEST_CANCELED") {
-      //     // handle that the user canceled the sign-in flow
-      //   }
-      // }
+      onError(error as Error);
     }
   };
 
