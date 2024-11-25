@@ -4,90 +4,83 @@ import {
   AppleAuthenticationButtonType,
   AppleAuthenticationButtonStyle,
   AppleAuthenticationScope,
+  AppleAuthenticationCredentialState,
   signInAsync,
+  isAvailableAsync,
 } from "expo-apple-authentication";
 import axios from "axios";
 import { useSession } from "@/providers/useSession";
 import { Provider } from "@/providers/SessionProvider";
 import { SignInProps } from "../types";
+import { supabase } from "@/supabase/initSupabase";
 
 const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn({ onSuccess, onError }: SignInProps) {
   const { signIn } = useSession();
 
-  const onPressAppleSignIn = async () => {
+  const checkAppleAvailability = async () => {
     try {
-      const credentials = await signInAsync({
-        requestedScopes: [AppleAuthenticationScope.EMAIL],
+      const isAvailable = await isAvailableAsync();
+      console.log("Apple Sign In available:", isAvailable);
+      return isAvailable;
+    } catch (error) {
+      console.log("Availability check error:", error);
+      return false;
+    }
+  };
+
+  const onPress = async () => {
+    const isAvailable = checkAppleAvailability();
+
+    if (!isAvailable) {
+      console.log("Apple Sign In is not available");
+      return;
+    }
+
+    try {
+      const credential = await signInAsync({
+        requestedScopes: [
+          AppleAuthenticationScope.FULL_NAME,
+          AppleAuthenticationScope.EMAIL,
+        ],
       });
 
-      const { authorizationCode, identityToken, user } = credentials;
+      console.log("Apple credential received:", credential);
 
-      if (!authorizationCode || !identityToken) {
-        throw new Error("Authorization failed");
-      }
-
-      // const developerToken = await fetchAppleDeveloperToken();
-
-      if (signIn) {
-        await signIn({
-          access_token: authorizationCode,
-          user_token: user,
-          identity_token: identityToken,
-          provider: Provider.APPLE,
+      // Sign in via Supabase Auth.
+      if (credential.identityToken) {
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: "apple",
+          token: credential.identityToken,
         });
+
+        if (error) {
+          console.log("Supabase error:", error);
+          throw error;
+        }
+
+        console.log("success!", data);
       } else {
-        throw new Error("signIn undefined");
+        throw new Error("No identityToken.");
       }
-
-      onSuccess();
-    } catch (error) {
-      onError(error as Error);
+    } catch (e) {
+      console.error(e);
+      // if (e.code === "ERR_REQUEST_CANCELED") {
+      //   // handle that the user canceled the sign-in flow
+      // } else {
+      //   // handle other errors
+      // }
     }
   };
-
-  const fetchApplePlaylists = async (userToken: string | null) => {
-    const developerToken = await fetchAppleDeveloperToken();
-
-    try {
-      const res = await axios.get(APPLE_PLAYLISTS_URL, {
-        headers: {
-          Authorization: `Bearer ${developerToken}`,
-          "Music-User-Token": userToken,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const fetchAppleDeveloperToken = async () => {
-    const {
-      data: { token },
-    } = await axios.get("http://127.0.0.1:8000/apple_token");
-
-    return token;
-  };
-
-  // const generateCodeVerifier = (length: number) => {
-  //   let text = "";
-  //   let possible =
-  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  //   for (let i = 0; i < length; i++) {
-  //     text += possible.charAt(Math.floor(Math.random() * possible.length));
-  //   }
-  //   return text;
-  // };
 
   return (
     <AppleAuthenticationButton
-      style={styles.button}
       buttonType={AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
-      onPress={onPressAppleSignIn}
+      style={{ width: 200, height: 64 }}
+      onPress={onPress}
     />
   );
 }

@@ -1,0 +1,36 @@
+graph TD
+    subgraph "Apple Developer Portal"
+        ADP[Apple Developer Program] --> |Creates| AppID[App ID]
+        ADP --> |Creates| SID[Service ID]
+        ADP --> |Creates| Key[Private Key]
+        ADP --> |Manages| Cert[Certificates]
+        ADP --> |Contains| TeamID[Team ID]
+        AppID --> |Uses| SIWA[Sign in with Apple Capability]
+        SID --> |Configures| SIWA
+    end
+
+    subgraph "Expo/EAS"
+        app.json --> |Defines| BundleID[Bundle Identifier]
+        app.json --> |Enables| ExpASIWA[Apple Sign In]
+        eas.json --> |Configures| Build[Build Profiles]
+        Build --> |Creates| DevBuild[Development Build]
+        Build --> |Creates| ProdBuild[Production Build]
+        BundleID --> |Matches| AppID
+    end
+
+    subgraph "Supabase Dashboard"
+        SupaAuth[Auth Settings] --> |Enables| Provider[Apple Provider]
+        Provider --> |Uses| SID
+        Provider --> |Uses| CallbackURL[Callback URL]
+    end
+
+    subgraph "Runtime Flow"
+        User[User] --> |Taps Sign In| App[Expo App]
+        App --> |Requests Auth| AppleAuth[Apple Auth]
+        AppleAuth --> |Returns| Token[Identity Token]
+        Token --> |Validates| SupaAuth
+        SupaAuth --> |Creates| Session[Auth Session]
+    end
+
+    SID --> |Configured in| Provider
+    CallbackURL --> |Registered in| SID
