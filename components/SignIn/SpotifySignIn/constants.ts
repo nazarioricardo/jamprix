@@ -15,5 +15,6 @@ export const SPOTIFY_SCOPES = [
 ];
 
 export const REDIRECT_URI = makeRedirectUri({
-  native: "dev.gneiss.JamPrix",
+  scheme: "dev.gneiss.jamprix",
+  path: "callback",
 });

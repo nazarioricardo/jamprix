@@ -4,21 +4,15 @@ import {
   AppleAuthenticationButtonType,
   AppleAuthenticationButtonStyle,
   AppleAuthenticationScope,
-  AppleAuthenticationCredentialState,
   signInAsync,
   isAvailableAsync,
 } from "expo-apple-authentication";
-import axios from "axios";
-import { useSession } from "@/providers/useSession";
-import { Provider } from "@/providers/SessionProvider";
 import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
 
-const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
+// const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn({ onSuccess, onError }: SignInProps) {
-  const { signIn } = useSession();
-
   const checkAppleAvailability = async () => {
     try {
       const isAvailable = await isAvailableAsync();
@@ -34,8 +28,7 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
     const isAvailable = checkAppleAvailability();
 
     if (!isAvailable) {
-      console.log("Apple Sign In is not available");
-      return;
+      throw new Error("Apple Sign In is not available");
     }
 
     try {
@@ -48,7 +41,6 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
 
       console.log("Apple credential received:", credential);
 
-      // Sign in via Supabase Auth.
       if (credential.identityToken) {
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: "apple",
@@ -56,21 +48,25 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
         });
 
         if (error) {
-          console.log("Supabase error:", error);
-          throw error;
+          console.log("Failed Supabase sign in:", error);
+          if (error.code === "ERR_REQUEST_CANCELED") {
+            return;
+          }
+
+          throw new Error(error.message);
         }
 
         console.log("success!", data);
+        onSuccess();
       } else {
-        throw new Error("No identityToken.");
+        throw new Error("No identityToken provided");
       }
-    } catch (e) {
-      console.error(e);
-      // if (e.code === "ERR_REQUEST_CANCELED") {
-      //   // handle that the user canceled the sign-in flow
-      // } else {
-      //   // handle other errors
-      // }
+    } catch (error) {
+      if (error instanceof Error) {
+        onError(error);
+      } else {
+        onError(new Error("Unknown error:" + error));
+      }
     }
   };
 
