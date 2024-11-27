@@ -21,7 +21,7 @@ type ChannelSearchParams = {
 function Channel() {
   const { channelId, title, description } =
     useLocalSearchParams<ChannelSearchParams>();
-  const { userId, email } = useSession();
+  const { userId } = useSession();
   const [users, setUsers] = useState<Profile[]>([]);
   const [events, setEvents] = useState<EventType[]>([]);
 

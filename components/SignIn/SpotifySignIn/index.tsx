@@ -35,7 +35,6 @@ function SpotifySignIn({ onSuccess, onError }: SignInProps) {
       throw new Error("Sign in not found");
     }
 
-    console.log("CODE", spotifyCode);
     try {
       // Sign in with Supabase using the Spotify code
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -47,8 +46,6 @@ function SpotifySignIn({ onSuccess, onError }: SignInProps) {
           },
         },
       });
-
-      console.log("data", data);
 
       if (error) {
         throw error;
@@ -71,6 +68,11 @@ function SpotifySignIn({ onSuccess, onError }: SignInProps) {
               throw new Error("Failed to set session");
             }
 
+            console.log(
+              "session",
+              JSON.stringify(sessionData.session, null, 2),
+            );
+
             signIn(sessionData.session);
             onSuccess();
           }
@@ -86,9 +88,7 @@ function SpotifySignIn({ onSuccess, onError }: SignInProps) {
 
   useEffect(() => {
     if (response?.type === "success" && response.params.code) {
-      handleSpotifyAuth(response.params.code).finally(() =>
-        console.log("hello!"),
-      );
+      handleSpotifyAuth(response.params.code);
     } else if (response?.type === "error") {
       onError?.(new Error(response.error?.message || "Authentication failed"));
     }

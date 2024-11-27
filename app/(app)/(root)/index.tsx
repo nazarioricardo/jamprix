@@ -6,10 +6,11 @@ import { useSession } from "@/providers/useSession";
 import { Channel } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
 import { Channel as ChannelType, Participant } from "@/types";
+import { signOutAsync } from "expo-apple-authentication";
 
 function Home() {
   const router = useRouter();
-  const { dbUserId } = useSession();
+  const { userId } = useSession();
   const [channels, setChannels] = useState<ChannelType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -20,11 +21,10 @@ function Home() {
       }
 
       setIsFetching(true);
-
       supabase
         .from("participants")
         .select(`*, channel (*, created_by(*))`)
-        .eq("profile", dbUserId)
+        .eq("profile", userId)
         .then(({ data, error }) => {
           setIsFetching(false);
           if (error) {

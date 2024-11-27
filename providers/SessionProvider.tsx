@@ -1,11 +1,12 @@
 import React, { createContext, useState } from "react";
 import { router } from "expo-router";
 import { supabase } from "../supabase/initSupabase";
-import { Session } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 
 export type Provider = "apple" | "spotify";
 
 type SessionContextProps = {
+  userId: string | undefined;
   email: string | undefined;
   provider: Provider | undefined;
   signIn: (session: Session) => Promise<void>;
@@ -20,9 +21,15 @@ type SessionProviderProps = {
 };
 
 function SessionProvider(props: SessionProviderProps) {
+  const [userId, setUserId] = useState<string | undefined>();
   const [email, setEmail] = useState<string | undefined>();
   const [provider, setProvider] = useState<Provider | undefined>();
-  // const [isLoading, setIsLoading] = useState(true);
+
+  const getProvider = (user: User): Provider | undefined => {
+    return user.identities?.find(({ identity_data }) => {
+      return user.user_metadata.provider_id === identity_data?.provider_id;
+    })?.provider as Provider;
+  };
 
   const signIn = async ({ user }: Session) => {
     if (!user) {
@@ -30,18 +37,20 @@ function SessionProvider(props: SessionProviderProps) {
       return;
     }
 
+    setUserId(user.id);
     setEmail(user.email);
-    setProvider(user.app_metadata.provider as Provider);
+    setProvider(getProvider(user));
   };
 
   const signOut = () => {
+    setUserId(undefined);
     setEmail(undefined);
+    setProvider(undefined);
     supabase.auth.signOut();
     router.navigate("/login");
   };
 
   const refreshSession = async () => {
-    // supabase handles refresh automatically with this
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -72,6 +81,7 @@ function SessionProvider(props: SessionProviderProps) {
   return (
     <SessionContext.Provider
       value={{
+        userId,
         email,
         provider,
         signIn,
