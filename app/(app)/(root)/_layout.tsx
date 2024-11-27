@@ -4,23 +4,22 @@ import { Text } from "react-native";
 import { useSession } from "@/providers/useSession";
 import ProfileButton from "@/components/ProfileButton";
 import CreateChannelButton from "@/components/CreateChannelButton";
+import { supabase } from "@/supabase/initSupabase";
 
 export default function RootLayout() {
-  const { userId, isLoading, signOut } = useSession();
+  const { refreshSession } = useSession();
 
   useEffect(() => {
-    if (isLoading) {
+    if (!refreshSession) {
       return;
     }
 
-    if (!userId && signOut) {
-      signOut();
-    }
-  }, [userId, isLoading]);
+    refreshSession();
+  }, []);
 
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
+  // if (isLoading) {
+  //   return <Text>Loading...</Text>;
+  // }
 
   return (
     <Stack initialRouteName="index">

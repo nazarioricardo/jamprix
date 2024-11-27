@@ -1,69 +1,96 @@
 import { useEffect } from "react";
 import { StyleSheet, Text, Pressable } from "react-native";
-import axios from "axios";
-import { useAuthRequest } from "expo-auth-session";
 import { useSession } from "@/providers/useSession";
-import { Provider } from "@/providers/SessionProvider";
-import { REDIRECT_URI, SPOTIFY_DISCOVERY, SPOTIFY_SCOPES } from "./constants";
+import { REDIRECT_URI } from "./constants";
 import { SignInProps } from "../types";
+import { supabase } from "@/supabase/initSupabase";
+import { useSpotifyAuth } from "./useSpotifyAuth";
+import { openAuthSessionAsync } from "expo-web-browser";
 
 function SpotifySignIn({ onSuccess, onError }: SignInProps) {
   console.log("Redirect URI", REDIRECT_URI);
   const { signIn } = useSession();
+  const { request, response, promptAsync } = useSpotifyAuth();
 
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
-      clientSecret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET || "",
-      scopes: SPOTIFY_SCOPES,
-      usePKCE: false,
-      responseType: "code",
-      extraParams: {
-        access_type: "offline",
-      },
-      redirectUri: REDIRECT_URI,
-    },
-    SPOTIFY_DISCOVERY,
-  );
+  const parseHashFragment = (url: string) => {
+    const hashPart = url.split("#")[1];
+    if (!hashPart) return null;
+
+    const params = new URLSearchParams(hashPart);
+    return {
+      access_token: params.get("access_token"),
+      expires_in: params.get("expires_in"),
+      refresh_token: params.get("refresh_token"),
+      provider_token: params.get("provider_token"),
+      provider_refresh_token: params.get("provider_refresh_token"),
+    };
+  };
 
   const onPressSpotifySignIn = () => {
     promptAsync();
   };
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { code } = response.params;
-      axios
-        .post(
-          "https://accounts.spotify.com/api/token",
-          {
-            code,
-            grant_type: "authorization_code",
-            client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
-            client_secret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET,
-            redirect_uri: REDIRECT_URI,
-          },
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          },
-        )
-        .then(({ data }) => {
-          if (!signIn) {
-            throw new Error(
-              "Unable to set token: AuthContext instance not found.",
-            );
-          }
+  const handleSpotifyAuth = async (spotifyCode: string) => {
+    if (!signIn) {
+      throw new Error("Sign in not found");
+    }
 
-          return signIn({ ...data, provider: Provider.SPOTIFY });
-        })
-        .then(() => {
-          onSuccess();
-        })
-        .catch((error) => {
-          onError(error as Error);
-        });
+    console.log("CODE", spotifyCode);
+    try {
+      // Sign in with Supabase using the Spotify code
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "spotify",
+        options: {
+          skipBrowserRedirect: true,
+          queryParams: {
+            code: spotifyCode,
+          },
+        },
+      });
+
+      console.log("data", data);
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        const result = await openAuthSessionAsync(data.url, REDIRECT_URI);
+        if (result.type === "success" && result.url) {
+          const tokens = parseHashFragment(result.url);
+
+          if (tokens?.access_token) {
+            // Set the session using the access token
+            const { data: sessionData, error: sessionError } =
+              await supabase.auth.setSession({
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token!,
+              });
+
+            if (!sessionData.session) {
+              throw new Error("Failed to set session");
+            }
+
+            signIn(sessionData.session);
+            onSuccess();
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Supabase auth error:", error);
+      onError?.(
+        error instanceof Error ? error : new Error("Authentication failed"),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (response?.type === "success" && response.params.code) {
+      handleSpotifyAuth(response.params.code).finally(() =>
+        console.log("hello!"),
+      );
+    } else if (response?.type === "error") {
+      onError?.(new Error(response.error?.message || "Authentication failed"));
     }
   }, [response]);
 

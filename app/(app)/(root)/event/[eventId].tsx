@@ -24,7 +24,7 @@ type SubmissionListItem = Submission & {
 };
 
 function Event() {
-  const { access_token, dbUserId } = useSession();
+  const { signOut } = useSession();
   const { id, title, description, userTrack } =
     useLocalSearchParams<EventParams>();
 
@@ -41,10 +41,19 @@ function Event() {
         throw error;
       }
 
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error("Session not found!");
+        throw new Error("Session not found!");
+      }
+
       const spotifyIds = data
-        .filter((submission) => submission.profile.user_id !== dbUserId)
+        .filter((submission) => submission.profile.user_id !== session.user.id)
         .map((submission) => {
-          console.log(submission.profile.user_id === dbUserId);
+          console.log(submission.profile.user_id === session.user.id);
           return submission.spotify_id;
         });
 
@@ -55,11 +64,12 @@ function Event() {
       const url = `https://api.spotify.com/v1/tracks?ids=${spotifyIds.join(
         ",",
       )}`;
+
       const {
         data: { tracks },
       } = await spotifyRequest.get(url, {
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 

@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "dev.gneiss.JamPrix",
+    "scheme": "dev.gneiss.jamprix",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

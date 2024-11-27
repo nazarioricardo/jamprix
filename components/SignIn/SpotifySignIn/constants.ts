@@ -1,8 +1,8 @@
-import { makeRedirectUri } from "expo-auth-session";
+import { DiscoveryDocument, makeRedirectUri } from "expo-auth-session";
 
 export const SPOTIFY_DISCOVERY = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
-  // tokenEndpoint: "https://accounts.spotify.com/api/token",
+  tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
 export const SPOTIFY_SCOPES = [

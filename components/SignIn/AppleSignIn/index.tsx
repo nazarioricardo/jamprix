@@ -9,10 +9,13 @@ import {
 } from "expo-apple-authentication";
 import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
+import { useSession } from "@/providers/useSession";
 
 // const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn({ onSuccess, onError }: SignInProps) {
+  const { signIn } = useSession();
+
   const checkAppleAvailability = async () => {
     try {
       const isAvailable = await isAvailableAsync();
@@ -25,6 +28,10 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
   };
 
   const onPress = async () => {
+    if (!signIn) {
+      throw new Error("Sign in not found");
+    }
+
     const isAvailable = checkAppleAvailability();
 
     if (!isAvailable) {
@@ -57,6 +64,8 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
         }
 
         console.log("success!", data);
+
+        signIn(data.session);
         onSuccess();
       } else {
         throw new Error("No identityToken provided");
