@@ -1,5 +1,6 @@
-import { Button, StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
+import { Input, Button, TextArea } from "tamagui";
 
 function ChannelCreate() {
   return (
@@ -9,12 +10,14 @@ function ChannelCreate() {
     >
       {({ handleChange, handleBlur, handleSubmit, values: { email } }) => (
         <View>
-          <TextInput
+          <Input
             onChangeText={handleChange("email")}
             onBlur={handleBlur("email")}
             value={email}
+            placeholder="Title"
           />
-          <Button onPress={() => handleSubmit()} title="Submit" />
+          <TextArea placeholder="Description..." />
+          <Button onPress={() => handleSubmit()}>Submit</Button>
         </View>
       )}
     </Formik>
