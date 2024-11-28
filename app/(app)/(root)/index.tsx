@@ -20,6 +20,11 @@ function Home() {
         return;
       }
 
+      if (!userId) {
+        console.log("No user id");
+        return;
+      }
+
       setIsFetching(true);
       supabase
         .from("participants")
@@ -28,7 +33,8 @@ function Home() {
         .then(({ data, error }) => {
           setIsFetching(false);
           if (error) {
-            throw error;
+            console.error("Error fetching participants:", error);
+            return;
           }
 
           if (!data) {
