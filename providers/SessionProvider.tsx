@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 import { router } from "expo-router";
 import { supabase } from "../supabase/initSupabase";
 import { Session, User } from "@supabase/supabase-js";
+import { initApiClient } from "@/request";
 
 export type Provider = "apple" | "spotify";
 
@@ -31,15 +32,24 @@ function SessionProvider(props: SessionProviderProps) {
     })?.provider as Provider;
   };
 
-  const signIn = async ({ user }: Session) => {
+  const signIn = async ({ user, access_token }: Session) => {
     if (!user) {
       console.error("No user!");
       return;
     }
 
+    const provider = getProvider(user);
+
+    if (!provider) {
+      console.error("Failed to parse provider from session data");
+      return;
+    }
+
     setUserId(user.id);
     setEmail(user.email);
-    setProvider(getProvider(user));
+    setProvider(provider);
+
+    initApiClient({ accessToken: access_token }, provider);
   };
 
   const signOut = () => {
