@@ -24,6 +24,15 @@ const createAppleRequest = (userToken: string, developerToken: string) => {
   });
 };
 
+const getAppleDeveloperToken = async (): Promise<string> => {
+  const { data } = await axios.get("https://localhost:8081/dev_token");
+  if (!data.token) {
+    throw new Error("Failed to fetch developer token");
+  }
+
+  return data.token;
+};
+
 type AuthHeaderData = {
   accessToken: string;
   developerToken?: string;
@@ -31,20 +40,28 @@ type AuthHeaderData = {
 
 let client: AxiosInstance | null = null;
 
-export const initApiClient = (
+export const initApiClient = async (
   headerAuthData: AuthHeaderData,
   provider: Provider,
 ) => {
-  const { accessToken, developerToken } = headerAuthData;
-  if (provider === "spotify" && "accessToken" in headerAuthData) {
-    client = createSpotifyRequest(accessToken);
-  }
+  try {
+    const { accessToken } = headerAuthData;
 
-  if (provider === "apple" && developerToken) {
-    client = createAppleRequest(accessToken, developerToken);
-  }
+    if (!accessToken) {
+      throw new Error(`Invalid auth data for provider: ${provider}`);
+    }
 
-  throw new Error(`Invalid auth data for provider: ${provider}`);
+    if (provider === "spotify") {
+      client = createSpotifyRequest(accessToken);
+    }
+
+    if (provider === "apple") {
+      const developerToken = await getAppleDeveloperToken();
+      client = createAppleRequest(accessToken, developerToken);
+    }
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const request = () => client;

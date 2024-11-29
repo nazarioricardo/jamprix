@@ -65,7 +65,7 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
         }
 
         console.log("success!", data.session.user.id);
-        signIn(data.session);
+        await signIn(data.session);
         onSuccess();
       } else {
         throw new Error("No identityToken provided");

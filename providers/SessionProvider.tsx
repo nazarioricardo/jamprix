@@ -10,7 +10,7 @@ type SessionContextProps = {
   userId: string | undefined;
   email: string | undefined;
   provider: Provider | undefined;
-  signIn: (session: Session) => void;
+  signIn: (session: Session) => Promise<void>;
   signOut: () => void;
   refreshSession: () => void;
 };
@@ -32,7 +32,7 @@ function SessionProvider(props: SessionProviderProps) {
     })?.provider as Provider;
   };
 
-  const signIn = ({ user, access_token }: Session) => {
+  const signIn = async ({ user, access_token }: Session) => {
     if (!user) {
       console.error("No user!");
       return;
@@ -49,7 +49,7 @@ function SessionProvider(props: SessionProviderProps) {
     setEmail(user.email);
     setProvider(provider);
 
-    initApiClient({ accessToken: access_token }, provider);
+    await initApiClient({ accessToken: access_token }, provider);
   };
 
   const signOut = () => {
@@ -71,7 +71,7 @@ function SessionProvider(props: SessionProviderProps) {
       return;
     }
 
-    signIn(session);
+    await signIn(session);
   };
 
   return (

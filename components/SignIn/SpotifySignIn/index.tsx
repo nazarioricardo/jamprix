@@ -73,7 +73,7 @@ function SpotifySignIn({ onSuccess, onError }: SignInProps) {
               JSON.stringify(sessionData.session, null, 2),
             );
 
-            signIn(sessionData.session);
+            await signIn(sessionData.session);
             onSuccess();
           }
         }
