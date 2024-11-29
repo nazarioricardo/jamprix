@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { Stack } from "expo-router";
-import { Text } from "react-native";
+import { Text } from "tamagui";
 import { useSession } from "@/providers/useSession";
 import ProfileButton from "@/components/ProfileButton";
 import CreateChannelButton from "@/components/CreateChannelButton";
-import { supabase } from "@/supabase/initSupabase";
 
 export default function RootLayout() {
-  const { refreshSession } = useSession();
+  const { refreshSession, userId } = useSession();
 
   useEffect(() => {
     if (!refreshSession) {
@@ -17,9 +16,9 @@ export default function RootLayout() {
     refreshSession();
   }, []);
 
-  // if (isLoading) {
-  //   return <Text>Loading...</Text>;
-  // }
+  if (!userId) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <Stack initialRouteName="index">

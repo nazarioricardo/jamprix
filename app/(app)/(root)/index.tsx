@@ -7,6 +7,7 @@ import { Channel } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
 import { Channel as ChannelType, Participant } from "@/types";
 import { signOutAsync } from "expo-apple-authentication";
+import { request } from "@/request";
 
 function Home() {
   const router = useRouter();
@@ -44,7 +45,21 @@ function Home() {
 
           setChannels(data.map((partipant: Participant) => partipant.channel));
         });
-    }, []),
+
+      request()
+        ?.get("/catalog/us/search", {
+          params: {
+            term: "the+beatles",
+            types: "albums",
+          },
+        })
+        .then((response) => {
+          console.log("Found!", response.data);
+        })
+        .catch((error) => {
+          console.error("Error!", error);
+        });
+    }, [userId]),
   );
 
   return (

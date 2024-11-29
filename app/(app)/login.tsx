@@ -3,9 +3,11 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SpotifySignIn, AppleSignIn } from "@/components/SignIn";
 import { supabase } from "@/supabase/initSupabase";
+import { useSession } from "@/providers/useSession";
+import { useEffect } from "react";
 
 function Login() {
-  const onSuccess = () => {
+  const handleSuccess = () => {
     if (router.canDismiss()) {
       router.dismiss();
     } else {
@@ -20,8 +22,8 @@ function Login() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <AppleSignIn onSuccess={onSuccess} onError={onError} />
-      <SpotifySignIn onSuccess={onSuccess} onError={onError} />
+      <AppleSignIn onSuccess={handleSuccess} onError={onError} />
+      <SpotifySignIn onSuccess={handleSuccess} onError={onError} />
       <Button
         title="Supabase Test"
         onPress={async () => {

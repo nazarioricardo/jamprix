@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { router } from "expo-router";
 import { supabase } from "../supabase/initSupabase";
 import { Session, User } from "@supabase/supabase-js";
@@ -10,7 +10,7 @@ type SessionContextProps = {
   userId: string | undefined;
   email: string | undefined;
   provider: Provider | undefined;
-  signIn: (session: Session) => Promise<void>;
+  signIn: (session: Session) => void;
   signOut: () => void;
   refreshSession: () => void;
 };
@@ -32,7 +32,7 @@ function SessionProvider(props: SessionProviderProps) {
     })?.provider as Provider;
   };
 
-  const signIn = async ({ user, access_token }: Session) => {
+  const signIn = ({ user, access_token }: Session) => {
     if (!user) {
       console.error("No user!");
       return;
@@ -71,21 +71,7 @@ function SessionProvider(props: SessionProviderProps) {
       return;
     }
 
-    const {
-      user: {
-        email,
-        app_metadata: { provider },
-      },
-    } = session;
-
-    setEmail(email);
-
-    if (!provider) {
-      console.error("No provider found");
-      return;
-    }
-
-    setProvider(provider as Provider);
+    signIn(session);
   };
 
   return (

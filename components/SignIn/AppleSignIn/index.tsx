@@ -10,11 +10,12 @@ import {
 import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
 import { useSession } from "@/providers/useSession";
+import { useEffect } from "react";
 
 // const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn({ onSuccess, onError }: SignInProps) {
-  const { signIn } = useSession();
+  const { signIn, userId, email, provider } = useSession();
 
   const checkAppleAvailability = async () => {
     try {
@@ -32,7 +33,7 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
       throw new Error("Sign in not found");
     }
 
-    const isAvailable = checkAppleAvailability();
+    const isAvailable = await checkAppleAvailability();
 
     if (!isAvailable) {
       throw new Error("Apple Sign In is not available");
@@ -63,8 +64,7 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
           throw new Error(error.message);
         }
 
-        console.log("success!", data);
-
+        console.log("success!", data.session.user.id);
         signIn(data.session);
         onSuccess();
       } else {
