@@ -5,7 +5,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { Track as SpotifyTrack } from "spotify-types";
 import type { Profile, Submission, Track as TrackType } from "@/types";
 import { supabase } from "@/supabase/initSupabase";
-import { spotifyRequest } from "@/request";
+import { request } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import { Track } from "@/components";
@@ -62,12 +62,12 @@ function Event() {
       }
 
       const url = `https://api.spotify.com/v1/tracks?ids=${spotifyIds.join(
-        ",",
+        ","
       )}`;
 
       const {
         data: { tracks },
-      } = await spotifyRequest.get(url, {
+      } = await request().get(url, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -78,7 +78,7 @@ function Event() {
           acc[track.id] = track;
           return acc;
         },
-        {},
+        {}
       );
 
       const combined = data

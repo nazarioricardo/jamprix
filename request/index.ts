@@ -38,11 +38,11 @@ type AuthHeaderData = {
   developerToken?: string;
 };
 
-let client: AxiosInstance | null = null;
+let client: AxiosInstance | undefined;
 
 export const initApiClient = async (
   headerAuthData: AuthHeaderData,
-  provider: Provider,
+  provider: Provider
 ) => {
   try {
     const { accessToken } = headerAuthData;
@@ -64,4 +64,10 @@ export const initApiClient = async (
   }
 };
 
-export const request = () => client;
+export const request = () => {
+  if (!client) {
+    throw new Error("API client not initialized. Call initApiClient first.");
+  }
+
+  return client;
+};
