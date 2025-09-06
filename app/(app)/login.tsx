@@ -3,8 +3,6 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SpotifySignIn, AppleSignIn } from "@/components/SignIn";
 import { supabase } from "@/supabase/initSupabase";
-import { useSession } from "@/providers/useSession";
-import { useEffect } from "react";
 
 function Login() {
   const handleSuccess = () => {
@@ -15,15 +13,11 @@ function Login() {
     }
   };
 
-  const onError = (error: Error) => {
-    console.error(error);
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <AppleSignIn onSuccess={handleSuccess} onError={onError} />
-      <SpotifySignIn onSuccess={handleSuccess} onError={onError} />
+      <AppleSignIn onSuccess={handleSuccess} />
+      <SpotifySignIn onSuccess={handleSuccess} />
       <Button
         title="Supabase Test"
         onPress={async () => {

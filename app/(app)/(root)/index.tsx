@@ -15,52 +15,52 @@ function Home() {
   const [channels, setChannels] = useState<ChannelType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (isFetching) {
-        return;
-      }
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (isFetching) {
+  //       return;
+  //     }
 
-      if (!userId) {
-        console.log("No user id");
-        return;
-      }
+  //     if (!userId) {
+  //       console.log("No user id");
+  //       return;
+  //     }
 
-      setIsFetching(true);
-      supabase
-        .from("participants")
-        .select(`*, channel (*, created_by(*))`)
-        .eq("profile", userId)
-        .then(({ data, error }) => {
-          setIsFetching(false);
-          if (error) {
-            console.error("Error fetching participants:", error);
-            return;
-          }
+  //     setIsFetching(true);
+  //     supabase
+  //       .from("participants")
+  //       .select(`*, channel (*, created_by(*))`)
+  //       .eq("profile", userId)
+  //       .then(({ data, error }) => {
+  //         setIsFetching(false);
+  //         if (error) {
+  //           console.error("Error fetching participants:", error);
+  //           return;
+  //         }
 
-          if (!data) {
-            setChannels([]);
-            return;
-          }
+  //         if (!data) {
+  //           setChannels([]);
+  //           return;
+  //         }
 
-          setChannels(data.map((partipant: Participant) => partipant.channel));
-        });
+  //         setChannels(data.map((partipant: Participant) => partipant.channel));
+  //       });
 
-      request()
-        ?.get("/catalog/us/search", {
-          params: {
-            term: "the+beatles",
-            types: "albums",
-          },
-        })
-        .then((response) => {
-          console.log("Found!", response.data);
-        })
-        .catch((error) => {
-          console.error("Error!", error);
-        });
-    }, [userId]),
-  );
+  //     request()
+  //       .get("/catalog/us/search", {
+  //         params: {
+  //           term: "the+beatles",
+  //           types: "albums",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log("Found!", response.data);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching catalog!", error);
+  //       });
+  //   }, [userId])
+  // );
 
   return (
     <View>

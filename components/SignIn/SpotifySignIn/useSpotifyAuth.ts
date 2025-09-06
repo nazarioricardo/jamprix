@@ -15,7 +15,7 @@ export const useSpotifyAuth = () => {
       },
       redirectUri: REDIRECT_URI,
     },
-    SPOTIFY_DISCOVERY,
+    SPOTIFY_DISCOVERY
   );
 
   return { request, response, promptAsync };

@@ -15,8 +15,7 @@ type SessionContextProps = {
   refreshSession: () => void;
 };
 
-const SessionContext = createContext<Partial<SessionContextProps>>({});
-
+const SessionContext = createContext<SessionContextProps | null>(null);
 type SessionProviderProps = {
   children: React.ReactNode;
 };
@@ -49,7 +48,11 @@ function SessionProvider(props: SessionProviderProps) {
     setEmail(user.email);
     setProvider(provider);
 
-    await initApiClient({ accessToken: access_token }, provider);
+    try {
+      await initApiClient({ accessToken: access_token }, provider);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const signOut = () => {
@@ -74,6 +77,21 @@ function SessionProvider(props: SessionProviderProps) {
     await signIn(session);
   };
 
+  useEffect(() => {
+    const initExistingSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      console.log("Current session:", data.session);
+
+      if (!data.session) {
+        console.warn("No Existing session");
+        return;
+      }
+
+      signIn(data.session);
+    };
+
+    initExistingSession();
+  }, []);
   return (
     <SessionContext.Provider
       value={{
