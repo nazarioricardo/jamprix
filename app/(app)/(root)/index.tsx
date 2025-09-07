@@ -17,31 +17,34 @@ function Home() {
 
   useFocusEffect(
     useCallback(() => {
-      if (isFetching) {
-        return;
-      }
+      const fetchChannels = async () => {
+        if (isFetching) {
+          return;
+        }
 
-      if (!session?.user.id) {
-        return;
-      }
+        if (!session?.user.id) {
+          return;
+        }
 
-      setIsFetching(true);
+        setIsFetching(true);
 
-      supabase
-        .from("participants")
-        .select(`*, channel (*)`)
-        .eq("user", session?.user.id)
-        .then(({ data, error }) => {
-          setIsFetching(false);
+        const { data, error } = await supabase
+          .from("participants")
+          .select(`*, channel (*)`)
+          .eq("user", session?.user.id);
 
-          if (error) {
-            console.error("Error fetching channels:", error);
-            return;
-          }
+        setIsFetching(false);
 
-          const channels = data.map((participant) => participant.channel);
-          setChannels(channels);
-        });
+        if (error) {
+          console.error("Error fetching channels:", error);
+          return;
+        }
+
+        const channels = data.map((participant) => participant.channel);
+        setChannels(channels);
+      };
+
+      fetchChannels();
     }, [session?.user.id])
   );
 
