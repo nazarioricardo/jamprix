@@ -1,7 +1,9 @@
 import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
 import { Input, Button, TextArea } from "tamagui";
+import { router } from "expo-router";
 import { supabase } from "@/supabase/initSupabase";
+import { useSession } from "@/providers/useSession";
 
 type ChannelFormValues = {
   title: string;
@@ -9,23 +11,49 @@ type ChannelFormValues = {
 };
 
 function ChannelCreate() {
+  const { session } = useSession();
+
   const onSubmitChannel = async ({ title, description }: ChannelFormValues) => {
-    const { data, error } = await supabase
-      .from("channels") // or whatever your table is called
+    if (!session) {
+      return;
+    }
+
+    const { data: channelData, error: channelError } = await supabase
+      .from("channels")
       .insert([
         {
           title,
           description,
         },
-      ]);
+      ])
+      .select()
+      .single();
 
-    if (error) {
-      console.error("Error creating channel:", error);
+    console.log("data", channelData);
+    if (channelError) {
+      console.error("Error creating channel:", channelError);
       return;
     }
 
-    console.log("Channel created:", data);
-    // Navigate back or show success message
+    const { error: participantError } = await supabase
+      .from("participants")
+      .insert([
+        {
+          channel: channelData.id,
+          user: session.user.id,
+        },
+      ]);
+
+    if (participantError) {
+      console.error("Error adding creator as participant:", participantError);
+      return;
+    }
+
+    if (router.canDismiss()) {
+      router.dismiss();
+    } else {
+      router.navigate("/");
+    }
   };
 
   return (

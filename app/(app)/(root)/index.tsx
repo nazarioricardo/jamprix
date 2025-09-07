@@ -10,57 +10,40 @@ import { signOutAsync } from "expo-apple-authentication";
 import { request } from "@/request";
 
 function Home() {
-  // const router = useRouter();
+  const router = useRouter();
   const { session } = useSession();
   const [channels, setChannels] = useState<ChannelType[]>([]);
-  // const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (isFetching) {
-  //       return;
-  //     }
+  useFocusEffect(
+    useCallback(() => {
+      if (isFetching) {
+        return;
+      }
 
-  //     if (!userId) {
-  //       console.log("No user id");
-  //       return;
-  //     }
+      if (!session?.user.id) {
+        return;
+      }
 
-  //     setIsFetching(true);
-  //     supabase
-  //       .from("participants")
-  //       .select(`*, channel (*, created_by(*))`)
-  //       .eq("profile", userId)
-  //       .then(({ data, error }) => {
-  //         setIsFetching(false);
-  //         if (error) {
-  //           console.error("Error fetching participants:", error);
-  //           return;
-  //         }
+      setIsFetching(true);
 
-  //         if (!data) {
-  //           setChannels([]);
-  //           return;
-  //         }
+      supabase
+        .from("participants")
+        .select(`*, channel (*)`)
+        .eq("user", session?.user.id)
+        .then(({ data, error }) => {
+          setIsFetching(false);
 
-  //         setChannels(data.map((partipant: Participant) => partipant.channel));
-  //       });
+          if (error) {
+            console.error("Error fetching channels:", error);
+            return;
+          }
 
-  //     request()
-  //       .get("/catalog/us/search", {
-  //         params: {
-  //           term: "the+beatles",
-  //           types: "albums",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log("Found!", response.data);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching catalog!", error);
-  //       });
-  //   }, [userId])
-  // );
+          const channels = data.map((participant) => participant.channel);
+          setChannels(channels);
+        });
+    }, [session?.user.id])
+  );
 
   return (
     <View>

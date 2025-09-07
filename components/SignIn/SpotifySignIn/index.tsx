@@ -5,10 +5,10 @@ import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { getQueryParams } from "expo-auth-session/build/QueryParams";
-import { Provider, User } from "@supabase/supabase-js";
+import { useEffect } from "react";
 
 function SpotifySignIn({ onSuccess }: SignInProps) {
-  const { signIn, signOut } = useSession();
+  const { signIn, signOut, session, displayName } = useSession();
 
   const createSessionFromUrl = async (url: string) => {
     const { params, errorCode } = getQueryParams(url);
@@ -46,6 +46,7 @@ function SpotifySignIn({ onSuccess }: SignInProps) {
           const session = await createSessionFromUrl(res.url);
           if (session && signIn) {
             signIn(session);
+
             onSuccess();
           }
         }
@@ -58,6 +59,32 @@ function SpotifySignIn({ onSuccess }: SignInProps) {
       }
     }
   };
+
+  useEffect(() => {
+    const upsertProfile = async () => {
+      if (!session || !displayName) {
+        return;
+      }
+
+      console.log("User ID:", session.user.id);
+      console.log("User ID type:", typeof session.user.id);
+
+      const { error } = await supabase.from("profiles").upsert(
+        {
+          user_id: session.user.id,
+          display_name: displayName,
+          provider: "spotify",
+        },
+        { onConflict: "user_id" }
+      );
+
+      if (error) {
+        console.error(error);
+      }
+    };
+
+    upsertProfile();
+  }, [session?.user.id, displayName]);
 
   return (
     <Pressable onPress={onPressSpotifySignIn} style={styles.button}>

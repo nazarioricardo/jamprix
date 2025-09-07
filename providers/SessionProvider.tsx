@@ -66,6 +66,7 @@ function SessionProvider(props: SessionProviderProps) {
     // console.log(JSON.stringify(user, null, 2));
 
     setSession(supabaseSession);
+    console.log("DISPLAY?", getDisplayName(user));
     setDisplayName(getDisplayName(user));
     setProvider(authProvider);
 
@@ -114,27 +115,6 @@ function SessionProvider(props: SessionProviderProps) {
 
   useEffect(() => {
     refreshSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        await signIn(session);
-      }
-
-      if (event === "INITIAL_SESSION" && session) {
-        // Existing user
-        await signIn(session);
-      }
-
-      // if (event === 'SIGNED_UP' && session) {
-      //   // New user - create profile here
-      //   await createProfile(session.user);
-      //   await signIn(session);
-      // }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   return (
