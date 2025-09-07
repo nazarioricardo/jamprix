@@ -4,7 +4,7 @@ import { useSession } from "@/providers/useSession";
 
 function ProfileButton() {
   const router = useRouter();
-  const { email } = useSession();
+  const { displayName } = useSession();
 
   const onPress = () => {
     console.log("ProfileButton pressed");
@@ -25,7 +25,7 @@ function ProfileButton() {
         alignItems: "center",
       }}
     >
-      <Text>{email ? email[0].toUpperCase() : "P"}</Text>
+      <Text>{displayName ? displayName[0].toUpperCase() : "P"}</Text>
     </TouchableOpacity>
   );
 }

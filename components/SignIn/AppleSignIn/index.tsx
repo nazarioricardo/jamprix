@@ -14,8 +14,8 @@ import { useEffect } from "react";
 
 // const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
-function AppleSignIn({ onSuccess, onError }: SignInProps) {
-  const { signIn, userId, email, provider } = useSession();
+function AppleSignIn({ onSuccess }: SignInProps) {
+  const { signIn, userId, displayName, provider } = useSession();
 
   const checkAppleAvailability = async () => {
     try {
@@ -71,11 +71,11 @@ function AppleSignIn({ onSuccess, onError }: SignInProps) {
         throw new Error("No identityToken provided");
       }
     } catch (error) {
-      if (error instanceof Error) {
-        onError(error);
-      } else {
-        onError(new Error("Unknown error:" + error));
-      }
+      // if (error instanceof Error) {
+      //   // onError(error);
+      // } else {
+      //   onError(new Error("Unknown error:" + error));
+      // }
     }
   };
 

@@ -8,7 +8,7 @@ export type Provider = "apple" | "spotify";
 
 type SessionContextProps = {
   userId: string | undefined;
-  email: string | undefined;
+  displayName: string | undefined;
   provider: Provider | undefined;
   signIn: (session: Session) => Promise<void>;
   signOut: () => void;
@@ -22,7 +22,7 @@ type SessionProviderProps = {
 
 function SessionProvider(props: SessionProviderProps) {
   const [userId, setUserId] = useState<string | undefined>();
-  const [email, setEmail] = useState<string | undefined>();
+  const [displayName, setDisplayName] = useState<string | undefined>();
   const [provider, setProvider] = useState<Provider | undefined>();
 
   const getProvider = (user: User): Provider | undefined => {
@@ -45,7 +45,7 @@ function SessionProvider(props: SessionProviderProps) {
     }
 
     setUserId(user.id);
-    setEmail(user.email);
+    setDisplayName(getDisplayName(user));
     setProvider(provider);
 
     try {
@@ -55,9 +55,19 @@ function SessionProvider(props: SessionProviderProps) {
     }
   };
 
+  function getDisplayName(user: User) {
+    return (
+      user.user_metadata?.name ||
+      user.user_metadata?.email ||
+      user.email ||
+      user.user_metadata?.full_name ||
+      "Anonymous User"
+    );
+  }
+
   const signOut = () => {
     setUserId(undefined);
-    setEmail(undefined);
+    setDisplayName(undefined);
     setProvider(undefined);
     supabase.auth.signOut();
     router.navigate("/login");
@@ -80,7 +90,10 @@ function SessionProvider(props: SessionProviderProps) {
   useEffect(() => {
     const initExistingSession = async () => {
       const { data } = await supabase.auth.getSession();
-      console.log("Current session:", data.session);
+      console.log(
+        "Current session:",
+        JSON.stringify(data.session?.user, null, 2)
+      );
 
       if (!data.session) {
         console.warn("No Existing session");
@@ -96,7 +109,7 @@ function SessionProvider(props: SessionProviderProps) {
     <SessionContext.Provider
       value={{
         userId,
-        email,
+        displayName,
         provider,
         signIn,
         signOut,
