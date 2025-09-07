@@ -2,15 +2,15 @@ import { useCallback, useState } from "react";
 import { Text, View, Button } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import { spotifyRequest } from "@/request";
+import { request } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { supabase } from "@/supabase/initSupabase";
 import type { Track as TrackType } from "@/types";
 import { parseTrack } from "@/utils";
 import Track from "@/components/Track";
 
-const TEST_TRACK =
-  "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
+// const TEST_TRACK =
+//   "https://open.spotify.com/track/0Sg3UL7f40ulmTh0Xwr6qY?si=e4307eae42ff4e84";
 
 type SubmitParams = {
   eventId: string;
@@ -18,8 +18,13 @@ type SubmitParams = {
 };
 
 function Submit() {
-  const { access_token, dbUserId } = useSession();
   const { eventId, currentTrack } = useLocalSearchParams<SubmitParams>();
+  const { session } = useSession();
+
+  if (!session) {
+    // TODO: Create better way to handle no session
+    return <></>;
+  }
 
   const parsedCurrentTrack: TrackType = currentTrack
     ? JSON.parse(currentTrack)
@@ -47,13 +52,13 @@ function Submit() {
     const trackId = trackIdMatch[1];
 
     try {
-      const response = await spotifyRequest.get(
+      const response = await request().get(
         `https://api.spotify.com/v1/tracks/${trackId}`,
         {
           headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
-        },
+        }
       );
 
       setTrack(parseTrack(response.data));
@@ -72,7 +77,7 @@ function Submit() {
   useFocusEffect(
     useCallback(() => {
       pasteSong();
-    }, []),
+    }, [])
   );
 
   const onPressSubmit = async () => {
@@ -86,10 +91,10 @@ function Submit() {
       const { error } = await supabase.from("submissions").upsert(
         {
           spotify_id: track.id,
-          profile: dbUserId,
+          profile: session.user.id,
           event: eventId,
         },
-        { onConflict: "event, profile" },
+        { onConflict: "event, profile" }
       );
 
       if (error) {

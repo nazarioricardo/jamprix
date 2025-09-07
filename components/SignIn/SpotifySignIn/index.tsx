@@ -5,6 +5,7 @@ import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { getQueryParams } from "expo-auth-session/build/QueryParams";
+import { Provider, User } from "@supabase/supabase-js";
 
 function SpotifySignIn({ onSuccess }: SignInProps) {
   const { signIn, signOut } = useSession();

@@ -7,23 +7,39 @@ import { initApiClient } from "@/request";
 export type Provider = "apple" | "spotify";
 
 type SessionContextProps = {
-  userId: string | undefined;
-  displayName: string | undefined;
-  provider: Provider | undefined;
+  session?: Session;
+  displayName?: string;
+  provider?: Provider;
+  isLoading: boolean;
   signIn: (session: Session) => Promise<void>;
   signOut: () => void;
   refreshSession: () => void;
 };
 
-const SessionContext = createContext<SessionContextProps | null>(null);
+const defaultContext: SessionContextProps = {
+  session: undefined,
+  displayName: undefined,
+  provider: undefined,
+  isLoading: true,
+  signIn: () => Promise.reject("Not implemented"),
+  signOut: () => {
+    throw new Error("Not implemented");
+  },
+  refreshSession: () => {
+    throw new Error("Not implemented");
+  },
+};
+
+const SessionContext = createContext<SessionContextProps>(defaultContext);
 type SessionProviderProps = {
   children: React.ReactNode;
 };
 
 function SessionProvider(props: SessionProviderProps) {
-  const [userId, setUserId] = useState<string | undefined>();
+  const [session, setSession] = useState<Session | undefined>();
   const [displayName, setDisplayName] = useState<string | undefined>();
   const [provider, setProvider] = useState<Provider | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const getProvider = (user: User): Provider | undefined => {
     return user.identities?.find(({ identity_data }) => {
@@ -31,7 +47,8 @@ function SessionProvider(props: SessionProviderProps) {
     })?.provider as Provider;
   };
 
-  const signIn = async ({ user, access_token }: Session) => {
+  const signIn = async (supabaseSession: Session) => {
+    const { user, access_token } = supabaseSession;
     if (!user) {
       console.error("No user!");
       return;
@@ -44,21 +61,26 @@ function SessionProvider(props: SessionProviderProps) {
       return;
     }
 
-    setUserId(user.id);
+    const authProvider = getProvider(user);
+
+    // console.log(JSON.stringify(user, null, 2));
+
+    setSession(supabaseSession);
     setDisplayName(getDisplayName(user));
-    setProvider(provider);
+    setProvider(authProvider);
 
     try {
       await initApiClient({ accessToken: access_token }, provider);
     } catch (error) {
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   function getDisplayName(user: User) {
     // TODO: clean this up, make it consistent per provider
-    // spotify
-    // * gets it from user_metadata, and user.email is empty
+    // spotify gets it from user_metadata, and user.email is empty
     return (
       user.user_metadata?.name ||
       user.user_metadata?.email ||
@@ -69,7 +91,7 @@ function SessionProvider(props: SessionProviderProps) {
   }
 
   const signOut = () => {
-    setUserId(undefined);
+    setSession(undefined);
     setDisplayName(undefined);
     setProvider(undefined);
     supabase.auth.signOut();
@@ -91,29 +113,37 @@ function SessionProvider(props: SessionProviderProps) {
   };
 
   useEffect(() => {
-    const initExistingSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log(
-        "Current session:",
-        JSON.stringify(data.session?.user, null, 2)
-      );
+    refreshSession();
 
-      if (!data.session) {
-        console.warn("No Existing session");
-        return;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        await signIn(session);
       }
 
-      signIn(data.session);
-    };
+      if (event === "INITIAL_SESSION" && session) {
+        // Existing user
+        await signIn(session);
+      }
 
-    initExistingSession();
+      // if (event === 'SIGNED_UP' && session) {
+      //   // New user - create profile here
+      //   await createProfile(session.user);
+      //   await signIn(session);
+      // }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
   return (
     <SessionContext.Provider
       value={{
-        userId,
+        session,
         displayName,
         provider,
+        isLoading,
         signIn,
         signOut,
         refreshSession,

@@ -1,22 +1,52 @@
 import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
 import { Input, Button, TextArea } from "tamagui";
+import { supabase } from "@/supabase/initSupabase";
+
+type ChannelFormValues = {
+  title: string;
+  description: string;
+};
 
 function ChannelCreate() {
+  const onSubmitChannel = async ({ title, description }: ChannelFormValues) => {
+    const { data, error } = await supabase
+      .from("channels") // or whatever your table is called
+      .insert([
+        {
+          title,
+          description,
+        },
+      ]);
+
+    if (error) {
+      console.error("Error creating channel:", error);
+      return;
+    }
+
+    console.log("Channel created:", data);
+    // Navigate back or show success message
+  };
+
   return (
     <Formik
-      initialValues={{ email: "" }}
-      onSubmit={(values) => console.log(values)}
+      initialValues={{ title: "", description: "" }}
+      onSubmit={onSubmitChannel}
     >
-      {({ handleChange, handleBlur, handleSubmit, values: { email } }) => (
+      {({ handleChange, handleBlur, handleSubmit, values }) => (
         <View>
           <Input
-            onChangeText={handleChange("email")}
-            onBlur={handleBlur("email")}
-            value={email}
+            onChangeText={handleChange("title")}
+            onBlur={handleBlur("title")}
+            value={values.title}
             placeholder="Title"
           />
-          <TextArea placeholder="Description..." />
+          <TextArea
+            onChangeText={handleChange("description")}
+            onBlur={handleBlur("description")}
+            value={values.description}
+            placeholder="Description..."
+          />
           <Button onPress={() => handleSubmit()}>Submit</Button>
         </View>
       )}

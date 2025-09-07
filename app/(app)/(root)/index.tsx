@@ -10,10 +10,10 @@ import { signOutAsync } from "expo-apple-authentication";
 import { request } from "@/request";
 
 function Home() {
-  const router = useRouter();
-  const { userId } = useSession();
+  // const router = useRouter();
+  const { session } = useSession();
   const [channels, setChannels] = useState<ChannelType[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
+  // const [isFetching, setIsFetching] = useState(false);
 
   // useFocusEffect(
   //   useCallback(() => {

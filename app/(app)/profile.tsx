@@ -5,7 +5,11 @@ import { useSession } from "@/providers/useSession";
 function Profile() {
   const theme = useTheme();
   const router = useRouter();
-  const { signOut, displayName, provider } = useSession();
+  const { signOut, displayName, provider, session } = useSession();
+
+  if (!session) {
+    return <></>;
+  }
 
   const onPressSignOut = () => {
     router.navigate("/");

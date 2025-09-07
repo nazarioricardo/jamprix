@@ -10,12 +10,11 @@ import {
 import { SignInProps } from "../types";
 import { supabase } from "@/supabase/initSupabase";
 import { useSession } from "@/providers/useSession";
-import { useEffect } from "react";
 
 // const APPLE_PLAYLISTS_URL = process.env.EXPO_PUBLIC_APPLE_PLAYLISTS_URL || "";
 
 function AppleSignIn({ onSuccess }: SignInProps) {
-  const { signIn, userId, displayName, provider } = useSession();
+  const { signIn } = useSession();
 
   const checkAppleAvailability = async () => {
     try {

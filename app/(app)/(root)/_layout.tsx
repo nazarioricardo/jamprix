@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { Text } from "tamagui";
 import { useSession } from "@/providers/useSession";
@@ -6,17 +5,9 @@ import ProfileButton from "@/components/ProfileButton";
 import CreateChannelButton from "@/components/CreateChannelButton";
 
 export default function RootLayout() {
-  const { refreshSession, userId } = useSession();
+  const { isLoading } = useSession();
 
-  useEffect(() => {
-    if (!refreshSession) {
-      return;
-    }
-
-    refreshSession();
-  }, []);
-
-  if (!userId) {
+  if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
