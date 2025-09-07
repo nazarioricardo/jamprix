@@ -5,7 +5,7 @@ import { useSession } from "@/providers/useSession";
 function Profile() {
   const theme = useTheme();
   const router = useRouter();
-  const { signOut, email, provider } = useSession();
+  const { signOut, displayName, provider } = useSession();
 
   const onPressSignOut = () => {
     router.navigate("/");
@@ -31,7 +31,7 @@ function Profile() {
       >
         <YStack>
           <Text>{provider}</Text>
-          <Text>{email}</Text>
+          <Text>{displayName}</Text>
         </YStack>
         <Button backgroundColor={"$color6"} onPress={onPressSignOut}>
           Sign Out
