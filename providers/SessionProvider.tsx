@@ -56,6 +56,9 @@ function SessionProvider(props: SessionProviderProps) {
   };
 
   function getDisplayName(user: User) {
+    // TODO: clean this up, make it consistent per provider
+    // spotify
+    // * gets it from user_metadata, and user.email is empty
     return (
       user.user_metadata?.name ||
       user.user_metadata?.email ||
