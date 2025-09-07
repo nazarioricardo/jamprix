@@ -66,9 +66,6 @@ function SpotifySignIn({ onSuccess }: SignInProps) {
         return;
       }
 
-      console.log("User ID:", session.user.id);
-      console.log("User ID type:", typeof session.user.id);
-
       const { error } = await supabase.from("profiles").upsert(
         {
           user_id: session.user.id,
