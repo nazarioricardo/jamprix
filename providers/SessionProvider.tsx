@@ -63,10 +63,7 @@ function SessionProvider(props: SessionProviderProps) {
 
     const authProvider = getProvider(user);
 
-    // console.log(JSON.stringify(user, null, 2));
-
     setSession(supabaseSession);
-    console.log("DISPLAY?", getDisplayName(user));
     setDisplayName(getDisplayName(user));
     setProvider(authProvider);
 

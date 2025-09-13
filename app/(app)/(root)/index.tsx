@@ -31,7 +31,7 @@ function Home() {
             .select(
               `
               *, 
-              channels (*, created_by:profiles(*))
+              channels (*, created_by:profiles (*))
               `
             )
             .eq("user_id", session?.user.id);
