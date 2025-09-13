@@ -1,16 +1,13 @@
 import { useCallback, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { FlatList } from "react-native";
 import { View } from "tamagui";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { useSession } from "@/providers/useSession";
 import { Channel } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
-import { Channel as ChannelType, Participant } from "@/types";
-import { signOutAsync } from "expo-apple-authentication";
-import { request } from "@/request";
+import { type Channel as ChannelType } from "@/types";
 
 function Home() {
-  const router = useRouter();
   const { session } = useSession();
   const [channels, setChannels] = useState<ChannelType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -28,20 +25,30 @@ function Home() {
 
         setIsFetching(true);
 
-        const { data, error } = await supabase
-          .from("participants")
-          .select(`*, channel (*)`)
-          .eq("user", session?.user.id);
+        try {
+          const { data, error } = await supabase
+            .from("participants")
+            .select(`*, channels (*)`)
+            .eq("user_id", session?.user.id);
 
-        setIsFetching(false);
+          setIsFetching(false);
 
-        if (error) {
+          if (error) {
+            throw error;
+          }
+
+          if (!data) {
+            setChannels([]);
+          }
+
+          const fetchedChannels = data.map(
+            (participant) => participant.channels
+          );
+
+          setChannels(fetchedChannels);
+        } catch (error) {
           console.error("Error fetching channels:", error);
-          return;
         }
-
-        const channels = data.map((participant) => participant.channel);
-        setChannels(channels);
       };
 
       fetchChannels();

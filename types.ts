@@ -1,6 +1,6 @@
 export type Profile = {
   user_id: string;
-  email: string;
+  display_name: string;
   apple_id: string;
   spotify_id: string;
   created_at: string;
@@ -12,11 +12,6 @@ export type Channel = {
   description: string;
   created_by: Profile;
   created_at: string;
-};
-
-export type Participant = {
-  profile: Profile;
-  channel: Channel;
 };
 
 export type Theme = {
