@@ -28,7 +28,12 @@ function Home() {
         try {
           const { data, error } = await supabase
             .from("participants")
-            .select(`*, channels (*)`)
+            .select(
+              `
+              *, 
+              channels (*, created_by:profiles(*))
+              `
+            )
             .eq("user_id", session?.user.id);
 
           setIsFetching(false);

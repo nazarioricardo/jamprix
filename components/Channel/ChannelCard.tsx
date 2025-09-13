@@ -8,11 +8,12 @@ function ChannelCard(channel: ChannelType) {
 
   const onPressView = () => {
     const { created_by, ...rest } = channel;
+
     router.navigate({
       pathname: `channel/[id]`,
       params: {
         ...rest,
-        createdBy: created_by.email,
+        createdBy: created_by.display_name,
         createdById: created_by.user_id,
       },
     });

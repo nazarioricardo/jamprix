@@ -6,7 +6,7 @@ function ChannelInfo({ title, description, created_by }: Channel) {
     <YStack alignItems="flex-start">
       <YStack paddingBottom={"$5"}>
         <H2>{title}</H2>
-        <Text>by {created_by.email}</Text>
+        <Text>by {created_by.display_name}</Text>
       </YStack>
 
       <H3>{description}</H3>
