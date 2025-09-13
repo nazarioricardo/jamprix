@@ -41,8 +41,8 @@ function ChannelCreate() {
   const createParticipant = async (channelId: string, userId: string) => {
     const { error } = await supabase.from("participants").insert([
       {
-        channel: channelId,
-        user: userId,
+        channel_id: channelId,
+        user_id: userId,
       },
     ]);
 
@@ -52,14 +52,11 @@ function ChannelCreate() {
   };
 
   const createEvents = async (channelId: string) => {
-    const { data: themes } = await supabase
-      .from("themes")
-      .select()
-      .order("random()")
-      .limit(3);
+    const { data: themes } = await supabase.from("themes").select().limit(3);
 
+    console.log("Themes", themes);
     if (!themes || themes.length === 0) {
-      throw new Error("Error fetching themes");
+      throw new Error("Error setting themes: No themes found");
     }
 
     const events = themes.map((theme) => ({
@@ -69,7 +66,7 @@ function ChannelCreate() {
 
     const { error } = await supabase.from("events").insert(events);
     if (error) {
-      throw new Error(`Error creating events: ${error}`);
+      throw new Error(`Error creating events: ${error.message}`);
     }
   };
 
@@ -111,7 +108,7 @@ function ChannelCreate() {
         <View
           style={{
             padding: 24,
-            paddingBottom: 48,
+            paddingBottom: 128,
             height: "100%",
             justifyContent: "flex-start",
             gap: 12,

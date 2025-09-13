@@ -12,7 +12,7 @@ import EventInfo from "./EventInfo";
 function EventCard({ id, theme }: Event) {
   const { title, description } = theme;
   const router = useRouter();
-  const { dbUserId, access_token } = useSession();
+  const { session } = useSession();
 
   const [isFetching, setIsFetching] = useState(true);
   const [userTrack, setUserTrack] = useState<TrackType | undefined>();
@@ -32,14 +32,18 @@ function EventCard({ id, theme }: Event) {
   };
 
   const fetchUserSubmission = async (spotifyId: string) => {
+    if (!session) {
+      return;
+    }
+
     setIsFetching(true);
     const response = await axios.get(
       `https://api.spotify.com/v1/tracks/${spotifyId}`,
       {
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
-      },
+      }
     );
 
     setUserTrack(parseTrack(response.data));
@@ -68,8 +72,12 @@ function EventCard({ id, theme }: Event) {
   }, []);
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
+
     const userSubmission = submissions.find(
-      (submission) => submission.profile === dbUserId,
+      (submission) => submission.profile === session.user.id
     );
 
     if (userSubmission && userSubmission.spotify_id) {

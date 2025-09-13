@@ -64,7 +64,16 @@ function Home() {
     <View>
       <FlatList
         data={channels}
-        style={{ padding: 24, height: "100%", overflow: "visible" }}
+        style={{
+          padding: 24,
+          height: "100%",
+          overflow: "visible",
+        }}
+        contentContainerStyle={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: 12,
+        }}
         keyExtractor={(channel) => channel.id}
         renderItem={({ item: channel }) => {
           return <Channel.Card {...channel} />;

@@ -39,8 +39,6 @@ function Channel() {
         .select("*, profile:profiles (*)")
         .eq("channel_id", channelId);
 
-      console.log("DATA", { data, error });
-
       if (error) {
         throw error;
       }
@@ -67,8 +65,8 @@ function Channel() {
     try {
       const { data, error } = await supabase
         .from("events")
-        .select("*, theme (*)")
-        .eq("channel", channelId);
+        .select("*, theme:themes (*)")
+        .eq("channel_id", channelId);
 
       if (error) {
         console.error(error);
@@ -88,7 +86,7 @@ function Channel() {
 
   useEffect(() => {
     fetchParticipants();
-    // fetchEvents();
+    fetchEvents();
   }, []);
 
   console.log("participantProfiles", participantProfiles);
