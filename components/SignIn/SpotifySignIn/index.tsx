@@ -6,7 +6,6 @@ import { supabase } from "@/supabase/initSupabase";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { getQueryParams } from "expo-auth-session/build/QueryParams";
 import { useEffect } from "react";
-import { initApiClient } from "@/request";
 
 function SpotifySignIn({ onSuccess }: SignInProps) {
   const { signIn, signOut, session, displayName } = useSession();
@@ -110,12 +109,7 @@ function SpotifySignIn({ onSuccess }: SignInProps) {
       });
 
       const { provider_token, provider_refresh_token } = tokenData;
-      signIn(newSession, { provider_token, provider_refresh_token });
-      try {
-        await initApiClient({ accessToken: provider_token }, "spotify");
-      } catch (error) {
-        throw error;
-      }
+      await signIn(newSession, { provider_token, provider_refresh_token });
 
       onSuccess();
     } catch (error) {

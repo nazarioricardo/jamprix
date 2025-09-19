@@ -86,10 +86,10 @@ function Submit() {
       const { error } = await supabase.from("submissions").upsert(
         {
           spotify_id: track.id,
-          profile: session.user.id,
-          event: eventId,
+          user_id: session.user.id,
+          event_id: eventId,
         },
-        { onConflict: "event, profile" }
+        { onConflict: "event_id, user_id" }
       );
 
       if (error) {

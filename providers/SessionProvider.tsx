@@ -2,6 +2,9 @@ import React, { createContext, useEffect, useState } from "react";
 import { router } from "expo-router";
 import { supabase } from "../supabase/initSupabase";
 import { Session, User } from "@supabase/supabase-js";
+import * as SecureStore from "expo-secure-store";
+import { initApiClient } from "@/request";
+import axios, { AxiosError } from "axios";
 
 export type Provider = "apple" | "spotify";
 
@@ -9,6 +12,9 @@ type ProviderTokens = {
   provider_token: string;
   provider_refresh_token: string;
 };
+
+const PROVIDER_TOKEN_KEY = "provider_token";
+const PROVIDER_REFRESH_TOKEN_KEY = "provider_refresh_token";
 
 type SessionContextProps = {
   session?: Session;
@@ -81,8 +87,20 @@ function SessionProvider(props: SessionProviderProps) {
 
     const { provider_token, provider_refresh_token } = providerTokens;
 
+    await SecureStore.setItemAsync(PROVIDER_TOKEN_KEY, provider_token);
+    await SecureStore.setItemAsync(
+      PROVIDER_REFRESH_TOKEN_KEY,
+      provider_refresh_token
+    );
+
     setProviderToken(provider_token);
     setProviderRefreshToken(provider_refresh_token);
+
+    try {
+      await initApiClient({ accessToken: provider_token }, "spotify");
+    } catch (error) {
+      throw error;
+    }
 
     setIsLoading(false);
   };
@@ -102,34 +120,67 @@ function SessionProvider(props: SessionProviderProps) {
   const signOut = () => {
     setSession(undefined);
     setDisplayName(undefined);
+
     setProvider(undefined);
     setProviderToken(undefined);
     setProviderRefreshToken(undefined);
+
+    SecureStore.deleteItemAsync(PROVIDER_TOKEN_KEY);
+    SecureStore.deleteItemAsync(PROVIDER_REFRESH_TOKEN_KEY);
+
     supabase.auth.signOut();
     router.navigate("/login");
   };
 
+  const refreshProviderToken = async (refreshToken: string) => {
+    if (!process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID) {
+      throw new Error("Missing Provider Client ID");
+    }
+
+    const response = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
+        client_secret: process.env.EXPO_PUBLIC_SPOTIFY_SECRET || "",
+      }),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+
+    return response.data.access_token;
+  };
+
   const refreshSession = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (!session) {
-      console.error("Session not found!");
+      if (!session) {
+        throw new Error("Session not found!");
+      }
+
+      const storedRefreshToken = await SecureStore.getItemAsync(
+        PROVIDER_REFRESH_TOKEN_KEY
+      );
+
+      if (!storedRefreshToken) {
+        throw new Error("No provider refresh token found");
+      }
+
+      const newProviderToken = await refreshProviderToken(storedRefreshToken);
+
+      await signIn(session, {
+        provider_token: newProviderToken,
+        provider_refresh_token: storedRefreshToken,
+      });
+    } catch (error) {
+      console.error(error);
       signOut();
-      return;
     }
-
-    if (!providerToken || providerRefreshToken) {
-      console.error("Provider tokens not found!");
-      signOut();
-      return;
-    }
-
-    await signIn(session, {
-      provider_token: providerToken,
-      provider_refresh_token: providerToken,
-    });
   };
 
   useEffect(() => {
