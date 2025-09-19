@@ -26,6 +26,7 @@ export type Event = {
 };
 
 export type Submission = {
+  id: string;
   profile: string;
   event: number;
   apple_id: string | null;

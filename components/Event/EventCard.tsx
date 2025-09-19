@@ -37,25 +37,31 @@ function EventCard({ id, theme }: Event) {
     }
 
     setIsFetching(true);
-    const response = await axios.get(
-      `https://api.spotify.com/v1/tracks/${spotifyId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      }
-    );
 
-    setUserTrack(parseTrack(response.data));
-    setIsFetching(false);
+    try {
+      const response = await axios.get(
+        `https://api.spotify.com/v1/tracks/${spotifyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+      setUserTrack(parseTrack(response.data));
+    } catch (error) {
+      console.error("Error fetching submissions", error);
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const fetchSubmissions = async () => {
+    setIsFetching(true);
     try {
       const { data, error } = await supabase
         .from("submissions")
         .select("*")
-        .eq("event", id);
+        .eq("event_id", id);
 
       if (error) {
         throw error;
@@ -64,6 +70,8 @@ function EventCard({ id, theme }: Event) {
       setSubmissions(data);
     } catch (error) {
       console.error("Error fetching submissions", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 

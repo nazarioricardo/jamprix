@@ -9,6 +9,7 @@ import { request } from "@/request";
 import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import { Track } from "@/components";
+import CardsList from "@/components/CardsList";
 
 type EventParams = {
   id: string;
@@ -34,8 +35,8 @@ function Event() {
     try {
       const { data, error } = await supabase
         .from("submissions")
-        .select("*, profile (*)")
-        .eq("event", id);
+        .select("*, profile:profiles (*)")
+        .eq("event_id", id);
 
       if (error) {
         throw error;
@@ -124,13 +125,8 @@ function Event() {
           track={userSubmissionTrack}
           isFetching={false}
         />
-        <FlatList
-          data={submissions}
-          keyExtractor={(submission) => submission.profile.user_id}
-          renderItem={({ item: { track } }) => {
-            return <Track.Info {...track} />;
-          }}
-        />
+
+        <CardsList data={submissions} Card={Track.Info} />
       </View>
     </>
   );

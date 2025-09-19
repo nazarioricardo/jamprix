@@ -6,6 +6,7 @@ import { useSession } from "@/providers/useSession";
 import { Channel } from "@/components";
 import { supabase } from "@/supabase/initSupabase";
 import { type Channel as ChannelType } from "@/types";
+import CardsList from "@/components/CardsList";
 
 function Home() {
   const { session } = useSession();
@@ -62,23 +63,7 @@ function Home() {
 
   return (
     <View>
-      <FlatList
-        data={channels}
-        style={{
-          padding: 24,
-          height: "100%",
-          overflow: "visible",
-        }}
-        contentContainerStyle={{
-          display: "flex",
-          justifyContent: "flex-start",
-          gap: 12,
-        }}
-        keyExtractor={(channel) => channel.id}
-        renderItem={({ item: channel }) => {
-          return <Channel.Card {...channel} />;
-        }}
-      />
+      <CardsList data={channels} Card={Channel.Card} />
     </View>
   );
 }

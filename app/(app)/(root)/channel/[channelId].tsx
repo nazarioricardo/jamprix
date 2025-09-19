@@ -6,6 +6,7 @@ import type { Profile, Channel, Event as EventType } from "@/types";
 import { supabase } from "@/supabase/initSupabase";
 import { useSession } from "@/providers/useSession";
 import { Event } from "@/components";
+import CardsList from "@/components/CardsList";
 
 type ChannelSearchParams = {
   channelId: string;
@@ -104,14 +105,8 @@ function Channel() {
             }}
           />
         )}
-        <FlatList
-          data={events}
-          keyExtractor={(event) => event.id}
-          style={{ padding: 24, height: "100%", overflow: "visible" }}
-          renderItem={({ item: { id, theme } }) => {
-            return <Event.Card key={id} id={id} theme={theme} />;
-          }}
-        />
+
+        <CardsList data={events} Card={Event.Card} />
       </View>
     </>
   );
