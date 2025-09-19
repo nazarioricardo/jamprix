@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import axios from "axios";
 import { Card, Button, YStack } from "tamagui";
 import { supabase } from "@/supabase/initSupabase";
 import type { Submission, Event, Track as TrackType } from "@/types";
@@ -8,6 +7,7 @@ import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import Track from "../Track/index";
 import EventInfo from "./EventInfo";
+import { request } from "@/request";
 
 function EventCard({ id, theme }: Event) {
   const { title, description } = theme;
@@ -39,17 +39,16 @@ function EventCard({ id, theme }: Event) {
     setIsFetching(true);
 
     try {
-      const response = await axios.get(
-        `https://api.spotify.com/v1/tracks/${spotifyId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
+      const response = await request().get(
+        `https://api.spotify.com/v1/tracks/${spotifyId}`
       );
+
       setUserTrack(parseTrack(response.data));
     } catch (error) {
-      console.error("Error fetching submissions", error);
+      console.error(
+        "Error fetching submissions",
+        JSON.stringify(error, null, 2)
+      );
     } finally {
       setIsFetching(false);
     }
@@ -85,7 +84,7 @@ function EventCard({ id, theme }: Event) {
     }
 
     const userSubmission = submissions.find(
-      (submission) => submission.profile === session.user.id
+      (submission) => submission.user_id === session.user.id
     );
 
     if (userSubmission && userSubmission.spotify_id) {

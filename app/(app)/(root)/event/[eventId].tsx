@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { Card, Paragraph } from "tamagui";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Track as SpotifyTrack } from "spotify-types";

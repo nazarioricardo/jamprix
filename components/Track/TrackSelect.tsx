@@ -17,8 +17,6 @@ function TrackSelect({ track, eventId, isFetching }: TrackSelectProps) {
     });
   };
 
-  console.log("Is Fetching?", isFetching);
-
   return (
     <Card backgroundColor={theme.color4} style={{ height: 100, width: "100%" }}>
       <TouchableOpacity
