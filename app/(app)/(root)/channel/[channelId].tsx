@@ -90,8 +90,6 @@ function Channel() {
     fetchEvents();
   }, []);
 
-  console.log("participantProfiles", participantProfiles);
-
   return (
     <>
       <Stack.Screen options={{ title: title }} />
