@@ -53,12 +53,7 @@ function Submit() {
 
     try {
       const response = await request().get(
-        `https://api.spotify.com/v1/tracks/${trackId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
+        `https://api.spotify.com/v1/tracks/${trackId}`
       );
 
       setTrack(parseTrack(response.data));

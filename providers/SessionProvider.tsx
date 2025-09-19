@@ -2,16 +2,20 @@ import React, { createContext, useEffect, useState } from "react";
 import { router } from "expo-router";
 import { supabase } from "../supabase/initSupabase";
 import { Session, User } from "@supabase/supabase-js";
-import { initApiClient } from "@/request";
 
 export type Provider = "apple" | "spotify";
+
+type ProviderTokens = {
+  provider_token: string;
+  provider_refresh_token: string;
+};
 
 type SessionContextProps = {
   session?: Session;
   displayName?: string;
   provider?: Provider;
   isLoading: boolean;
-  signIn: (session: Session) => Promise<void>;
+  signIn: (session: Session, providerTokens: ProviderTokens) => Promise<void>;
   signOut: () => void;
   refreshSession: () => void;
 };
@@ -39,6 +43,10 @@ function SessionProvider(props: SessionProviderProps) {
   const [session, setSession] = useState<Session | undefined>();
   const [displayName, setDisplayName] = useState<string | undefined>();
   const [provider, setProvider] = useState<Provider | undefined>();
+  const [providerToken, setProviderToken] = useState<string | undefined>();
+  const [providerRefreshToken, setProviderRefreshToken] = useState<
+    string | undefined
+  >();
   const [isLoading, setIsLoading] = useState(true);
 
   const getProvider = (user: User): Provider | undefined => {
@@ -47,8 +55,12 @@ function SessionProvider(props: SessionProviderProps) {
     })?.provider as Provider;
   };
 
-  const signIn = async (supabaseSession: Session) => {
-    const { user, access_token } = supabaseSession;
+  const signIn = async (
+    supabaseSession: Session,
+    providerTokens: ProviderTokens
+  ) => {
+    const { user } = supabaseSession;
+
     if (!user) {
       console.error("No user!");
       return;
@@ -67,13 +79,12 @@ function SessionProvider(props: SessionProviderProps) {
     setDisplayName(getDisplayName(user));
     setProvider(authProvider);
 
-    try {
-      await initApiClient({ accessToken: access_token }, provider);
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    const { provider_token, provider_refresh_token } = providerTokens;
+
+    setProviderToken(provider_token);
+    setProviderRefreshToken(provider_refresh_token);
+
+    setIsLoading(false);
   };
 
   function getDisplayName(user: User) {
@@ -92,6 +103,8 @@ function SessionProvider(props: SessionProviderProps) {
     setSession(undefined);
     setDisplayName(undefined);
     setProvider(undefined);
+    setProviderToken(undefined);
+    setProviderRefreshToken(undefined);
     supabase.auth.signOut();
     router.navigate("/login");
   };
@@ -102,12 +115,21 @@ function SessionProvider(props: SessionProviderProps) {
     } = await supabase.auth.getSession();
 
     if (!session) {
-      console.log("Session not found!");
+      console.error("Session not found!");
       signOut();
       return;
     }
 
-    await signIn(session);
+    if (!providerToken || providerRefreshToken) {
+      console.error("Provider tokens not found!");
+      signOut();
+      return;
+    }
+
+    await signIn(session, {
+      provider_token: providerToken,
+      provider_refresh_token: providerToken,
+    });
   };
 
   useEffect(() => {

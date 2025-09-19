@@ -6,51 +6,118 @@ import { supabase } from "@/supabase/initSupabase";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { getQueryParams } from "expo-auth-session/build/QueryParams";
 import { useEffect } from "react";
+import { initApiClient } from "@/request";
 
 function SpotifySignIn({ onSuccess }: SignInProps) {
   const { signIn, signOut, session, displayName } = useSession();
 
-  const createSessionFromUrl = async (url: string) => {
+  const parseTokensFromUrl = async (url: string) => {
     const { params, errorCode } = getQueryParams(url);
 
-    if (errorCode) throw new Error(errorCode);
-    const { access_token, refresh_token } = params;
+    if (errorCode) {
+      throw new Error(errorCode);
+    }
 
-    if (!access_token) return;
+    const {
+      access_token,
+      refresh_token,
+      provider_token,
+      provider_refresh_token,
+    } = params;
 
-    const { data, error } = await supabase.auth.setSession({
+    if (!access_token) {
+      throw new Error("No access token received");
+    }
+
+    if (!refresh_token) {
+      throw new Error("No refresh token received");
+    }
+
+    if (!provider_token) {
+      throw new Error("No provider token received");
+    }
+
+    if (!provider_refresh_token) {
+      throw new Error("No provider refresh token received");
+    }
+
+    return {
+      access_token,
+      refresh_token,
+      provider_token,
+      provider_refresh_token,
+    };
+  };
+
+  const signInToSupabase = async () => {
+    const { data, error: authError } = await supabase.auth.signInWithOAuth({
+      provider: "spotify",
+      options: {
+        redirectTo: REDIRECT_URI,
+        scopes: SPOTIFY_SCOPES.join(" "),
+      },
+    });
+
+    if (authError) {
+      throw authError;
+    }
+
+    if (!data.url) {
+      throw new Error("No URL received from supabase auth");
+    }
+
+    return data.url;
+  };
+
+  const setSupabaseSession = async ({
+    access_token,
+    refresh_token,
+  }: {
+    access_token: string;
+    refresh_token: string;
+  }) => {
+    const { data, error: sessionError } = await supabase.auth.setSession({
       access_token,
       refresh_token,
     });
 
-    if (error) throw error;
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!data.session) {
+      throw new Error("No session received");
+    }
+
     return data.session;
   };
 
   const onPressSpotifySignIn = async () => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "spotify",
-        options: {
-          redirectTo: REDIRECT_URI,
-          scopes: SPOTIFY_SCOPES.join(" "),
-        },
+      const authUrl = await signInToSupabase();
+      const res = await openAuthSessionAsync(authUrl, REDIRECT_URI);
+
+      if (res.type !== "success") {
+        throw new Error("Failed to open auth session async");
+      }
+
+      const tokenData = await parseTokensFromUrl(res.url);
+      const { access_token, refresh_token } = tokenData;
+
+      const newSession = await setSupabaseSession({
+        access_token,
+        refresh_token,
       });
 
-      if (error) throw error;
-
-      if (data?.url) {
-        const res = await openAuthSessionAsync(data.url, REDIRECT_URI);
-
-        if (res.type === "success") {
-          const session = await createSessionFromUrl(res.url);
-          if (session && signIn) {
-            signIn(session);
-
-            onSuccess();
-          }
-        }
+      const { provider_token, provider_refresh_token } = tokenData;
+      signIn(newSession, { provider_token, provider_refresh_token });
+      try {
+        await initApiClient({ accessToken: provider_token }, "spotify");
+      } catch (error) {
+        throw error;
       }
+
+      onSuccess();
     } catch (error) {
       console.error("Auth error:", error);
 
