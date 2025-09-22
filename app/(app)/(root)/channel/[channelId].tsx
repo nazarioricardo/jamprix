@@ -67,7 +67,8 @@ function Channel() {
       const { data, error } = await supabase
         .from("events")
         .select("*, theme:themes (*)")
-        .eq("channel_id", channelId);
+        .eq("channel_id", channelId)
+        .order("id");
 
       if (error) {
         console.error(error);

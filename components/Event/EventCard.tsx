@@ -9,7 +9,7 @@ import Track from "../Track/index";
 import EventInfo from "./EventInfo";
 import { request } from "@/request";
 
-function EventCard({ id, theme }: Event) {
+function EventCard({ id, theme, status }: Event) {
   const { title, description } = theme;
   const router = useRouter();
   const { session } = useSession();
@@ -95,7 +95,12 @@ function EventCard({ id, theme }: Event) {
   return (
     <Card padded elevate>
       <Card.Header>
-        <EventInfo id={id} theme={theme} submissions={submissions} />
+        <EventInfo
+          id={id}
+          theme={theme}
+          submissions={submissions}
+          status={status}
+        />
       </Card.Header>
 
       <YStack gap="$4">

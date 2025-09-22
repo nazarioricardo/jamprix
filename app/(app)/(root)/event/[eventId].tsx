@@ -6,7 +6,6 @@ import { Track as SpotifyTrack } from "spotify-types";
 import type { Profile, Submission, Track as TrackType } from "@/types";
 import { supabase } from "@/supabase/initSupabase";
 import { request } from "@/request";
-import { useSession } from "@/providers/useSession";
 import { parseTrack } from "@/utils";
 import { Track } from "@/components";
 import CardsList from "@/components/CardsList";
@@ -25,7 +24,6 @@ type SubmissionListItem = Submission & {
 };
 
 function Event() {
-  const { signOut } = useSession();
   const { id, title, description, userTrack } =
     useLocalSearchParams<EventParams>();
 

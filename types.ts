@@ -19,10 +19,22 @@ export type Theme = {
   description: string;
 };
 
+// -- 0 = pending
+// -- 1 = active
+// -- 2 = scoring
+// -- 3 = done
+export const enum EventStatusEnum {
+  PENDING,
+  ACTIVE,
+  SCORING,
+  DONE,
+}
+
 export type Event = {
   id: string;
   theme: Theme;
   submissions?: Submission[];
+  status: EventStatusEnum;
 };
 
 export type Submission = {
