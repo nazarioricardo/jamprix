@@ -105,6 +105,8 @@ function Channel() {
           />
         )}
 
+        <Text>{description}</Text>
+
         <CardsList data={events} Card={Event.Card} />
       </View>
     </>
